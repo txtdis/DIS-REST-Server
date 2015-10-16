@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StockTake extends AuditedId {
+public class StockTake extends TrackedId {
 
 	private static final long serialVersionUID = 7630222117410458884L;
 

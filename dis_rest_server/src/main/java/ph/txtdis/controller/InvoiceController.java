@@ -22,13 +22,13 @@ public class InvoiceController extends SpunController<InvoiceRepository, Invoice
 	}
 
 	@RequestMapping(path = "/find", method = RequestMethod.GET)
-	public ResponseEntity<?> findById(@RequestParam("prefix") String prefix, @RequestParam("id") Long id,
+	public ResponseEntity<?> findByOrderNo(@RequestParam("prefix") String prefix, @RequestParam("id") Long id,
 			@RequestParam("suffix") String suffix) {
 		if (prefix.isEmpty())
 			prefix = null;
 		if (suffix.isEmpty())
 			suffix = null;
-		Invoice entity = repository.findByIdPrefixAndIdNoAndIdSuffix(prefix, id, suffix);
+		Invoice entity = repository.findByPrefixAndNbrIdAndSuffix(prefix, id, suffix);
 		return new ResponseEntity<>(entity, HttpStatus.OK);
 	}
 
@@ -41,8 +41,12 @@ public class InvoiceController extends SpunController<InvoiceRepository, Invoice
 	@RequestMapping(path = "/latest", method = RequestMethod.GET)
 	public ResponseEntity<?> list(@RequestParam("prefix") String prefix, @RequestParam("suffix") String suffix,
 			@RequestParam("start") Long start, @RequestParam("end") Long end) {
-		Invoice invoice = repository.findFirstByIdPrefixAndIdSuffixAndIdNoBetweenOrderByIdNoDesc(prefix, suffix, start,
-				end);
+		if (prefix.isEmpty())
+			prefix = null;
+		if (suffix.isEmpty())
+			suffix = null;
+		Invoice invoice = repository.findFirstByPrefixAndSuffixAndNbrIdBetweenOrderByNbrIdDesc(prefix, suffix,
+				start, end);
 		return new ResponseEntity<>(invoice, HttpStatus.OK);
 	}
 }

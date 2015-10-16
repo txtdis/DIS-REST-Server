@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 	uniqueConstraints =
 		@UniqueConstraint(columnNames = { "family_id", "parent_id" }) )
 //@formatter:on
-public class ItemTree extends AuditedId {
+public class ItemTree extends TrackedId {
 
 	private static final long serialVersionUID = 4058968729625611538L;
 

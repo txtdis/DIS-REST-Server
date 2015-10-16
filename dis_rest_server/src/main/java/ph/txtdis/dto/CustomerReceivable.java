@@ -15,6 +15,8 @@ public class CustomerReceivable {
 
 	private Long id;
 
+	private String orderNo;
+
 	private LocalDate orderDate;
 
 	private LocalDate dueDate;
@@ -27,6 +29,7 @@ public class CustomerReceivable {
 
 	public CustomerReceivable(Invoice i) {
 		id = i.getId();
+		orderNo = i.getOrderNo();
 		orderDate = i.getOrderDate();
 		dueDate = orderDate.plusDays(getTermsInDays(i));
 		daysOverCount = dueDate.until(LocalDate.now(), ChronoUnit.DAYS);

@@ -55,15 +55,6 @@ public abstract class SoldOrder<TD extends Subtotalled, D extends Percentage> ex
 		return getGrossValue() == null ? BigDecimal.ZERO : getGrossValue().subtract(getDiscountValue());
 	}
 
-	private BigDecimal getGrossValue() {
-		return getDetails() == null ? null
-				: getDetails().stream().map(d -> d.getSubtotalValue()).reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
-	}
-
-	private BigDecimal getDiscountValue() {
-		return getDiscounts() == null ? BigDecimal.ZERO : computeDiscount(getGrossValue());
-	}
-
 	private BigDecimal computeDiscount(BigDecimal value) {
 		BigDecimal discount = BigDecimal.ZERO;
 		for (D d : getDiscounts()) {
@@ -71,5 +62,14 @@ public abstract class SoldOrder<TD extends Subtotalled, D extends Percentage> ex
 			value = value.subtract(discount);
 		}
 		return discount;
+	}
+
+	private BigDecimal getDiscountValue() {
+		return getDiscounts() == null ? BigDecimal.ZERO : computeDiscount(getGrossValue());
+	}
+
+	private BigDecimal getGrossValue() {
+		return getDetails() == null ? null
+				: getDetails().stream().map(d -> d.getSubtotalValue()).reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
 	}
 }

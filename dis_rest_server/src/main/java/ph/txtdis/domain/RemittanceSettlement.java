@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RemittanceSettlement extends AuditedId {
+public class RemittanceSettlement extends TrackedId {
 
 	private static final long serialVersionUID = 3725295775807671330L;
 

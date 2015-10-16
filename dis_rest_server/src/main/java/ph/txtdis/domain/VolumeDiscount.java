@@ -20,7 +20,7 @@ import ph.txtdis.type.VolumeDiscountType;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class VolumeDiscount extends AuditedId {
+public class VolumeDiscount extends TrackedId {
 
 	private static final long serialVersionUID = 7710563453808768120L;
 

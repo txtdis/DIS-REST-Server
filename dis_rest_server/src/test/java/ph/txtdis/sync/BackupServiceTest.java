@@ -1,6 +1,5 @@
 package ph.txtdis.sync;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +19,6 @@ public class BackupServiceTest {
 
 	@Autowired
 	private BackupService service;
-
-	@Before
-	public void setUp() throws Exception {
-	}
 
 	@Test
 	public void testGetBackupBytes() throws FailedBackupException {

@@ -23,14 +23,14 @@ public class InvoiceBookletController extends IdController<InvoiceBookletReposit
 			prefix = null;
 		if (suffix.isEmpty())
 			suffix = null;
-		InvoiceBooklet entity = repository
-				.findByIdPrefixAndIdSuffixAndStartIdLessThanEqualAndEndIdGreaterThanEqual(prefix, suffix, id, id);
+		InvoiceBooklet entity = repository.findByPrefixAndSuffixAndStartIdLessThanEqualAndEndIdGreaterThanEqual(prefix,
+				suffix, id, id);
 		return new ResponseEntity<>(entity, HttpStatus.OK);
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<?> list() {
-		List<InvoiceBooklet> list = repository.findByOrderByIdPrefixAscStartIdAscIdSuffixAsc();
+		List<InvoiceBooklet> list = repository.findByOrderByPrefixAscStartIdAscSuffixAsc();
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 }

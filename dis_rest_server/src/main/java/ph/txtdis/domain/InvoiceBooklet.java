@@ -12,18 +12,18 @@ import lombok.EqualsAndHashCode;
 @Data
 @Entity
 @EqualsAndHashCode(callSuper = true)
-//@formatter:off
 @Table(
+//@formatter:off
 	indexes = {
-		@Index(columnList = "idPrefix, startId, endId, idSuffix") },
+		@Index(columnList = "prefix, startId, endId, suffix") },
 	uniqueConstraints =
-		@UniqueConstraint(columnNames = { "idPrefix", "startId", "endId", "idSuffix" }) )
+		@UniqueConstraint(columnNames = { "prefix", "startId", "endId", "suffix" }) )
 //@formatter:on
-public class InvoiceBooklet extends AuditedId {
+public class InvoiceBooklet extends TrackedId {
 
 	private static final long serialVersionUID = 6045289585003677813L;
 
-	private String idPrefix, idSuffix;
+	private String prefix, suffix;
 
 	private long startId, endId;
 

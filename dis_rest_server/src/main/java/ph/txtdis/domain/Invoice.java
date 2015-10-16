@@ -27,20 +27,20 @@ import ph.txtdis.dto.RemittancePayment;
 // @formatter:off
 	indexes = {
 		@Index(columnList = "customer_id, fullyPaid"),
-		@Index(columnList = "idPrefix, idNo, idSuffix"),
+		@Index(columnList = "prefix, nbrId, suffix"),
 		@Index(columnList = "booking_id"),
 		@Index(columnList = "fullyPaid"),
 		@Index(columnList = "orderDate") },
 	uniqueConstraints =
-		@UniqueConstraint(columnNames = { "idPrefix", "idNo", "idSuffix" }) )
+		@UniqueConstraint(columnNames = { "prefix", "nbrId", "suffix" }) )
 //@formatter:on
 public class Invoice extends SoldOrder<InvoiceDetail, InvoiceDiscount> {
 
 	private static final long serialVersionUID = -4363805360652350591L;
 
-	private String idPrefix, idSuffix;
+	private String prefix, suffix;
 
-	private Long idNo;
+	private Long nbrId;
 
 	@OneToOne
 	private Booking booking;
@@ -60,6 +60,10 @@ public class Invoice extends SoldOrder<InvoiceDetail, InvoiceDiscount> {
 	@JsonIgnore
 	private boolean fullyPaid;
 
+	public String getOrderNo() {
+		return prefix() + nbrId + suffix();
+	}
+
 	public List<RemittancePayment> getPayments() {
 		return getRemittances() == null ? null
 				: getRemittances().stream()
@@ -69,6 +73,14 @@ public class Invoice extends SoldOrder<InvoiceDetail, InvoiceDiscount> {
 
 	public BigDecimal getUnpaidValue() {
 		return getValue().subtract(getRemittances() == null ? BigDecimal.ZERO : sumPayments());
+	}
+
+	private String prefix() {
+		return prefix == null ? "" : prefix + "-";
+	}
+
+	private String suffix() {
+		return suffix == null ? "" : suffix;
 	}
 
 	private BigDecimal sumPayments() {

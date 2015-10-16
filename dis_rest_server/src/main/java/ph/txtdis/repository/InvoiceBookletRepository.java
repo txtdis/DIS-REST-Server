@@ -11,13 +11,13 @@ import ph.txtdis.domain.InvoiceBooklet;
 @Repository("invoiceBookletRepository")
 public interface InvoiceBookletRepository extends CrudRepository<InvoiceBooklet, Long> {
 
-	// @formatter:off
-	InvoiceBooklet findByIdPrefixAndIdSuffixAndStartIdLessThanEqualAndEndIdGreaterThanEqual(
-			@Param("idPrefix") String idPrefix,
-			@Param("idSuffix") String idSuffix,
-			@Param("firstId") Long firstId,
-			@Param("lastId") Long lastId);
-	// @formatter:on
+	List<InvoiceBooklet> findByOrderByPrefixAscStartIdAscSuffixAsc();
 
-	List<InvoiceBooklet> findByOrderByIdPrefixAscStartIdAscIdSuffixAsc();
+	InvoiceBooklet findByPrefixAndSuffixAndStartIdLessThanEqualAndEndIdGreaterThanEqual(
+	// @formatter:off
+		@Param("prefix") String idPrefix,
+		@Param("suffix") String idSuffix,
+		@Param("firstId") Long firstId,
+		@Param("lastId") Long lastId);
+	// @formatter:on
 }

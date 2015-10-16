@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 	indexes = { @Index(columnList = "customer_id, startDate") },
 	uniqueConstraints = @UniqueConstraint(columnNames = { "customer_id", "startDate", "level", "familyLimit_id" }) )
 //@formatter:on
-public class CustomerDiscount extends AuditedId {
+public class CustomerDiscount extends TrackedId {
 
 	private static final long serialVersionUID = -455882680349394952L;
 

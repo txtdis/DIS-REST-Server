@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class LoadSettlementAdjustment extends AuditedId {
+public class LoadSettlementAdjustment extends TrackedId {
 
 	private static final long serialVersionUID = 9083329396715031474L;
 

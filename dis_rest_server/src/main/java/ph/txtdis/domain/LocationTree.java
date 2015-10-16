@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class LocationTree extends AuditedId {
+public class LocationTree extends TrackedId {
 
     private static final long serialVersionUID = 7452722249369420815L;
 

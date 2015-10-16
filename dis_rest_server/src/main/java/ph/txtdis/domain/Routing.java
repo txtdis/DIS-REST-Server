@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = { "customer_id", "startDate" }) )
-public class Routing extends AuditedId implements Comparable<Routing> {
+public class Routing extends TrackedId implements Comparable<Routing> {
 
 	private static final long serialVersionUID = -4540897080828317375L;
 

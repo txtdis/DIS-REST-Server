@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = { "customer_id", "startDate" }) )
-public class CreditDetail extends AuditedId {
+public class CreditDetail extends TrackedId {
 
 	private static final long serialVersionUID = 1655742390812653142L;
 

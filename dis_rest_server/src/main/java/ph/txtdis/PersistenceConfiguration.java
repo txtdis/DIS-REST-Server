@@ -1562,7 +1562,8 @@ public class PersistenceConfiguration {
 
 		List<InvoiceDetail> varietyDetails = new ArrayList<>();
 		Invoice varietyInvoice = new Invoice();
-		varietyInvoice.setIdNo(1L);
+		varietyInvoice.setId(1L);
+		varietyInvoice.setNbrId(1L);
 		varietyInvoice.setCustomer(varietyBooking.getCustomer());
 		varietyInvoice.setBooking(varietyBooking);
 		varietyInvoice.setOrderDate(newDate());
@@ -1573,11 +1574,13 @@ public class PersistenceConfiguration {
 			varietyDetails.add(detail);
 		});
 		varietyInvoice.setDetails(varietyDetails);
-		invoiceRepository.save(varietyInvoice);
+		varietyInvoice = invoiceRepository.save(varietyInvoice);
 
 		List<InvoiceDetail> wetStallDetails = new ArrayList<>();
 		Invoice wetStallInvoice = new Invoice();
-		wetStallInvoice.setIdNo(2L);
+		wetStallInvoice.setId(2L);
+		wetStallInvoice.setNbrId(1L);
+		wetStallInvoice.setSuffix("A");
 		wetStallInvoice.setCustomer(wetStallBooking.getCustomer());
 		wetStallInvoice.setBooking(wetStallBooking);
 		wetStallInvoice.setOrderDate(newDate());
@@ -1587,11 +1590,14 @@ public class PersistenceConfiguration {
 					wmb.getPriceValue()));
 		});
 		wetStallInvoice.setDetails(wetStallDetails);
-		invoiceRepository.save(wetStallInvoice);
+		wetStallInvoice = invoiceRepository.save(wetStallInvoice);
 
 		List<InvoiceDetail> dryStallDetails = new ArrayList<>();
 		Invoice dryStallInvoice = new Invoice();
-		dryStallInvoice.setIdNo(3L);
+		dryStallInvoice.setId(3L);
+		dryStallInvoice.setPrefix("SMB");
+		dryStallInvoice.setNbrId(1L);
+		dryStallInvoice.setSuffix("A");
 		dryStallInvoice.setCustomer(dryStallBooking.getCustomer());
 		dryStallInvoice.setBooking(dryStallBooking);
 		dryStallInvoice.setOrderDate(newDate());
@@ -1602,7 +1608,7 @@ public class PersistenceConfiguration {
 			dryStallDetails.add(detail);
 		});
 		dryStallInvoice.setDetails(dryStallDetails);
-		invoiceRepository.save(dryStallInvoice);
+		dryStallInvoice = invoiceRepository.save(dryStallInvoice);
 
 		List<InvoiceDetail> dryStall1Details = new ArrayList<>();
 		dryStallBooking.getDetails().forEach(d -> {
@@ -1611,13 +1617,15 @@ public class PersistenceConfiguration {
 			dryStall1Details.add(detail);
 		});
 		Invoice dryStallInvoice1 = new Invoice();
-		dryStallInvoice1.setIdNo(4L);
+		dryStallInvoice1.setId(4L);
+		dryStallInvoice1.setPrefix("GSM");
+		dryStallInvoice1.setNbrId(1L);
 		dryStallInvoice1.setCustomer(dryStallBooking.getCustomer());
 		dryStallInvoice1.setBooking(dryStallBooking);
 		dryStallInvoice1.setOrderDate(newDate().minusDays(1L));
 		dryStallInvoice1.setDiscounts(getInvoiceDiscounts(dryStallBooking));
 		dryStallInvoice1.setDetails(dryStall1Details);
-		invoiceRepository.save(dryStallInvoice1);
+		dryStallInvoice1 = invoiceRepository.save(dryStallInvoice1);
 
 		List<InvoiceDetail> dryStall8Details = new ArrayList<>();
 		dryStallBooking.getDetails().forEach(d -> {
@@ -1626,13 +1634,15 @@ public class PersistenceConfiguration {
 			dryStall8Details.add(detail);
 		});
 		Invoice dryStallInvoice8 = new Invoice();
-		dryStallInvoice8.setIdNo(5L);
+		dryStallInvoice8.setId(5L);
+		dryStallInvoice8.setPrefix("PF");
+		dryStallInvoice8.setNbrId(1L);
 		dryStallInvoice8.setCustomer(dryStallBooking.getCustomer());
 		dryStallInvoice8.setBooking(dryStallBooking);
 		dryStallInvoice8.setOrderDate(newDate().minusDays(8L));
 		dryStallInvoice8.setDiscounts(getInvoiceDiscounts(dryStallBooking));
 		dryStallInvoice8.setDetails(dryStall8Details);
-		invoiceRepository.save(dryStallInvoice8);
+		dryStallInvoice8 = invoiceRepository.save(dryStallInvoice8);
 
 		List<InvoiceDetail> dryStall16Details = new ArrayList<>();
 		dryStallBooking.getDetails().forEach(d -> {
@@ -1641,13 +1651,15 @@ public class PersistenceConfiguration {
 			dryStall16Details.add(detail);
 		});
 		Invoice dryStallInvoice16 = new Invoice();
-		dryStallInvoice16.setIdNo(6L);
+		dryStallInvoice16.setId(6L);
+		dryStallInvoice16.setNbrId(1L);
+		dryStallInvoice16.setSuffix("B");
 		dryStallInvoice16.setCustomer(dryStallBooking.getCustomer());
 		dryStallInvoice16.setBooking(dryStallBooking);
 		dryStallInvoice16.setOrderDate(newDate().minusDays(16L));
 		dryStallInvoice16.setDiscounts(getInvoiceDiscounts(dryStallBooking));
 		dryStallInvoice16.setDetails(dryStall16Details);
-		invoiceRepository.save(dryStallInvoice16);
+		dryStallInvoice16 = invoiceRepository.save(dryStallInvoice16);
 
 		List<InvoiceDetail> dryStall31Details = new ArrayList<>();
 		dryStallBooking.getDetails().forEach(d -> {
@@ -1656,13 +1668,16 @@ public class PersistenceConfiguration {
 			dryStall31Details.add(detail);
 		});
 		Invoice dryStallInvoice31 = new Invoice();
-		dryStallInvoice31.setIdNo(7L);
+		dryStallInvoice31.setId(7L);
+		dryStallInvoice31.setPrefix("SMB");
+		dryStallInvoice31.setNbrId(1L);
+		dryStallInvoice31.setSuffix("B");
 		dryStallInvoice31.setCustomer(dryStallBooking.getCustomer());
 		dryStallInvoice31.setBooking(dryStallBooking);
 		dryStallInvoice31.setOrderDate(newDate().minusDays(31L));
 		dryStallInvoice31.setDiscounts(getInvoiceDiscounts(dryStallBooking));
 		dryStallInvoice31.setDetails(dryStall31Details);
-		invoiceRepository.save(dryStallInvoice31);
+		dryStallInvoice31 = invoiceRepository.save(dryStallInvoice31);
 
 		List<InvoiceDetail> wetStall31Details = new ArrayList<>();
 		wetStallBooking.getDetails().forEach(d -> {
@@ -1671,13 +1686,16 @@ public class PersistenceConfiguration {
 			wetStall31Details.add(detail);
 		});
 		Invoice wetStallInvoice31 = new Invoice();
-		wetStallInvoice31.setIdNo(8L);
+		wetStallInvoice31.setNbrId(8L);
+		wetStallInvoice31.setPrefix("GSM");
+		wetStallInvoice31.setNbrId(1L);
+		wetStallInvoice31.setSuffix("B");
 		wetStallInvoice31.setCustomer(wetStallBooking.getCustomer());
 		wetStallInvoice31.setBooking(wetStallBooking);
 		wetStallInvoice31.setOrderDate(newDate().minusDays(31L));
 		wetStallInvoice31.setDiscounts(getInvoiceDiscounts(wetStallBooking));
 		wetStallInvoice31.setDetails(wetStall31Details);
-		invoiceRepository.save(wetStallInvoice31);
+		wetStallInvoice31 = invoiceRepository.save(wetStallInvoice31);
 
 		BigDecimal rdmRemitValue = new BigDecimal(469.60);
 		Remittance rdmRemit = new Remittance(newDate(), magnum_edsa, "", rdmRemitValue, dsp1);
@@ -1706,7 +1724,7 @@ public class PersistenceConfiguration {
 				QualityType.GOOD);
 		marinaPineSlice15ReceiptDetail.setPriceValue(pineSlice15PurchasePricePerCS);
 		marinaReceipt.setDetails(Arrays.asList(marinaPineSliceFlatReceiptDetail, marinaPineSlice15ReceiptDetail));
-		receiptRepository.save(marinaReceipt);
+		marinaReceipt = receiptRepository.save(marinaReceipt);
 
 		stockTakeReconciliationRepository.save(new StockTakeReconciliation(sysgen, newDate()));
 
@@ -1715,12 +1733,12 @@ public class PersistenceConfiguration {
 		StockTakeDetail std2 = new StockTakeDetail(pineSliceFlat, UomType.PC, BigDecimal.TEN, QualityType.BAD);
 		StockTakeDetail std3 = new StockTakeDetail(pineSlice15, UomType.PC, new BigDecimal(5), QualityType.BAD);
 		stockTake1.setDetails(Arrays.asList(std1, std2, std3));
-		stockTakeRepository.save(stockTake1);
+		stockTake1 = stockTakeRepository.save(stockTake1);
 
 		StockTake stockTake2 = stockTakeRepository.save(new StockTake(edsa, sysgen, sysgen, newDate()));
 		StockTakeDetail std4 = new StockTakeDetail(pineSlice15, UomType.PC, new BigDecimal(5), QualityType.GOOD);
 		stockTake2.setDetails(Arrays.asList(std4));
-		stockTakeRepository.save(stockTake2);
+		stockTake2 = stockTakeRepository.save(stockTake2);
 	}
 
 	private LocalDate startDate() {

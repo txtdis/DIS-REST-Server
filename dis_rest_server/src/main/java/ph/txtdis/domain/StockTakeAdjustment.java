@@ -19,7 +19,7 @@ import ph.txtdis.type.QualityType;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StockTakeAdjustment extends AuditedId {
+public class StockTakeAdjustment extends TrackedId {
 
 	private static final long serialVersionUID = -1676592025325317933L;
 

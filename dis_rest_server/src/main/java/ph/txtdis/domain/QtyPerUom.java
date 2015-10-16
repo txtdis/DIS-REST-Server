@@ -21,7 +21,7 @@ import ph.txtdis.type.UomType;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {
         "item_id", "uom" }) )
-public class QtyPerUom extends AuditedId {
+public class QtyPerUom extends TrackedId {
 
     private static final long serialVersionUID = 3802256527344044201L;
 

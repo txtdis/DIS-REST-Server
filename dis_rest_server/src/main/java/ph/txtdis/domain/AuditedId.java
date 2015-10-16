@@ -2,13 +2,7 @@ package ph.txtdis.domain;
 
 import java.time.ZonedDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
-
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -18,17 +12,20 @@ import lombok.NoArgsConstructor;
 @Data
 @MappedSuperclass
 @EqualsAndHashCode(callSuper = true)
-@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AuditedId extends AbstractId {
+public abstract class AuditedId extends TrackedId {
 
-	private static final long serialVersionUID = -5753015257974898395L;
+	private static final long serialVersionUID = 8939708088215882688L;
 
-	@CreatedBy
-	@Column(nullable = false)
-	protected String createdBy;
+	protected String revisedBy;
 
-	@CreatedDate
-	@Column(nullable = false)
-	protected ZonedDateTime createdOn;
+	protected ZonedDateTime revisedOn;
+
+	protected String invalidatedBy;
+
+	protected ZonedDateTime invalidatedOn;
+
+	protected String validatedBy;
+
+	protected ZonedDateTime validatedOn;
 }

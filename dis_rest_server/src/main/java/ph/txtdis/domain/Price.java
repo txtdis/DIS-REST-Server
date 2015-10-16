@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = { "item_id", "startDate", "type_id", "channelLimit_id" }) )
-public class Price extends AuditedId implements Comparable<Price> {
+public class Price extends TrackedId implements Comparable<Price> {
 
 	private static final long serialVersionUID = -5721868302278165093L;
 

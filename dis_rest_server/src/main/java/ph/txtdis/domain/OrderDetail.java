@@ -19,7 +19,7 @@ import ph.txtdis.type.UomType;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class OrderDetail extends AuditedId {
+public abstract class OrderDetail extends AbstractId {
 
 	private static final long serialVersionUID = 1774123388619693560L;
 

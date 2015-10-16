@@ -1,6 +1,5 @@
 package ph.txtdis.controller;
 
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
@@ -36,7 +35,6 @@ public class VatController {
 
 	@RequestMapping(path = "/rate", method = RequestMethod.GET)
 	public ResponseEntity<?> vatRate() {
-		Vat v = new Vat(0L, "VAT RATE", LocalDate.now(), new BigDecimal("1000"));
-		return new ResponseEntity<>(v, HttpStatus.OK);
+		return new ResponseEntity<>(new Vat(), HttpStatus.OK);
 	}
 }
