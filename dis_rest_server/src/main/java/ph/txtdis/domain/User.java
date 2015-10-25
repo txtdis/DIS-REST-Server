@@ -45,11 +45,16 @@ public class User implements Serializable, Keyed<String> {
 
 	private String email;
 
-	public User(String username, String password, boolean enabled) {
+	public User(String username, String password, List<Authority> roles) {
 		this.username = username;
 		this.password = password;
-		this.enabled = enabled;
-		this.roles = Arrays.asList(new Authority(UserType.SALES_USER));
+		this.enabled = true;
+		this.roles = roles == null ? Arrays.asList(new Authority(UserType.SELLER)) : roles;
+	}
+
+	public User disable() {
+		enabled = false;
+		return this;
 	}
 
 	@Override

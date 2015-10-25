@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,9 +20,10 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @AllArgsConstructor
+@Table(name = "stock_take")
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StockTake extends TrackedId {
+public class StockTake extends TrackedOrder {
 
 	private static final long serialVersionUID = 7630222117410458884L;
 
@@ -34,7 +36,7 @@ public class StockTake extends TrackedId {
 	@ManyToOne(optional = false)
 	private User checker;
 
-	@Column(nullable = false)
+	@Column(name = "stock_take_date", nullable = false)
 	private LocalDate stockTakeDate;
 
 	@JoinColumn(name = "stock_take_id")

@@ -59,8 +59,8 @@ public class Spring {
 		setAuthentication(authenticate(user, password(), getRoles()));
 	}
 
-	public static User user() {
-		return (User) authentication().getPrincipal();
+	public static org.springframework.security.core.userdetails.User user() {
+		return (org.springframework.security.core.userdetails.User) authentication().getPrincipal();
 	}
 
 	public static String username() {

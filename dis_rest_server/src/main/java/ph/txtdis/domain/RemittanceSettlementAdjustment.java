@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,13 +16,14 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @AllArgsConstructor
+@Table(name = "remittance_settlement_adjustment")
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RemittanceSettlementAdjustment extends TrackedId {
+public class RemittanceSettlementAdjustment extends TrackedOrder {
 
 	private static final long serialVersionUID = 4362180227772097988L;
 
-	@Column(nullable = false)
+	@Column(name = "pick_date", nullable = false)
 	private LocalDate pickDate;
 
 	@ManyToOne(optional = false)
@@ -30,6 +32,6 @@ public class RemittanceSettlementAdjustment extends TrackedId {
 	@ManyToOne(optional = false)
 	private Invoice invoice;
 
-	@Column(nullable = false)
+	@Column(name = "action_taken", nullable = false)
 	private String actionTaken;
 }

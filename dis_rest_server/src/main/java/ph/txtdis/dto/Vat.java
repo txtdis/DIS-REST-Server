@@ -36,7 +36,7 @@ public class Vat {
 	public Vat(Invoice i) {
 		id = i.getId();
 		prefix = i.getPrefix();
-		nbrId = i.getNbrId();
+		nbrId = i.getNumId();
 		suffix = i.getSuffix();
 		customer = i.getCustomerName();
 		orderDate = i.getOrderDate();

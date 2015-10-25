@@ -27,4 +27,9 @@ public class Location extends AbstractName {
 		super(name);
 		this.type = type;
 	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 }

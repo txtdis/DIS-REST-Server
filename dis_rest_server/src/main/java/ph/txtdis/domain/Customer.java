@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
@@ -37,10 +38,12 @@ public class Customer extends AbstractDeactivatedName {
 	@ManyToOne(optional = false)
 	private Location province;
 
-	@ManyToOne(optional = false)
+	@ManyToOne
+	@JoinColumn(name = "primary_pricing")
 	private PricingType primaryPricingType;
 
 	@ManyToOne
+	@JoinColumn(name = "alternate_pricing")
 	private PricingType alternatePricingType;
 
 	private CustomerType type;
@@ -48,13 +51,21 @@ public class Customer extends AbstractDeactivatedName {
 	@ManyToOne
 	private Channel channel;
 
+	@Column(name = "visit_frequency")
 	private VisitFrequency visitFrequency;
 
 	@JoinColumn(name = "customer_id")
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<Routing> routeHistory;
 
-	private String contactName, contactSurname, contactTitle;
+	@Column(name = "contact_name")
+	private String contactName;
+
+	@Column(name = "contact_surname")
+	private String contactSurname;
+
+	@Column(name = "contact_title")
+	private String contactTitle;
 
 	private String mobile;
 
@@ -64,7 +75,7 @@ public class Customer extends AbstractDeactivatedName {
 
 	@JoinColumn(name = "customer_id")
 	@OneToMany(cascade = CascadeType.ALL)
-	private List<CustomerDiscount> discounts;
+	private List<Discount> discounts;
 
 	@ManyToOne
 	private Customer parent;
@@ -74,10 +85,16 @@ public class Customer extends AbstractDeactivatedName {
 		this.type = type;
 	}
 
+	public CreditDetail getCredit(LocalDate date) {
+		return getCreditDetails() == null ? null
+				: getCreditDetails().stream().filter(p -> p.getStartDate().compareTo(date) <= 0)
+						.max((a, b) -> a.getStartDate().compareTo(b.getStartDate())).get();
+	}
+
 	public Route getRoute(LocalDate date) {
 		return getRouteHistory() == null ? null
-				: getRouteHistory().stream().filter(p -> p.getStartDate().compareTo(date) <= 0).max(Routing::compareTo)
-						.get().getRoute();
+				: getRouteHistory().stream().filter(p -> p.getStartDate().compareTo(date) <= 0)
+						.max((a, b) -> a.getStartDate().compareTo(b.getStartDate())).get().getRoute();
 	}
 
 	public String getSeller(LocalDate date) {

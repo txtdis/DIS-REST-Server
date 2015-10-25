@@ -2,7 +2,7 @@ package ph.txtdis.domain;
 
 import java.util.List;
 
-public interface Discounted<T extends Percentage> {
+public interface Discounted {
 
-	List<T> getDiscounts();
+	List<Discount> getDiscounts();
 }

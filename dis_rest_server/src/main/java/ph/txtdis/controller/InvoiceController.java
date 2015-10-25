@@ -28,7 +28,7 @@ public class InvoiceController extends SpunController<InvoiceRepository, Invoice
 			prefix = null;
 		if (suffix.isEmpty())
 			suffix = null;
-		Invoice entity = repository.findByPrefixAndNbrIdAndSuffix(prefix, id, suffix);
+		Invoice entity = repository.findByPrefixAndNumIdAndSuffix(prefix, id, suffix);
 		return new ResponseEntity<>(entity, HttpStatus.OK);
 	}
 
@@ -45,7 +45,7 @@ public class InvoiceController extends SpunController<InvoiceRepository, Invoice
 			prefix = null;
 		if (suffix.isEmpty())
 			suffix = null;
-		Invoice invoice = repository.findFirstByPrefixAndSuffixAndNbrIdBetweenOrderByNbrIdDesc(prefix, suffix,
+		Invoice invoice = repository.findFirstByPrefixAndSuffixAndNumIdBetweenOrderByNumIdDesc(prefix, suffix,
 				start, end);
 		return new ResponseEntity<>(invoice, HttpStatus.OK);
 	}

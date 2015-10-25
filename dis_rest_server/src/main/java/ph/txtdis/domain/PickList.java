@@ -9,19 +9,22 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import ph.txtdis.printer.Printed;
 
 @Data
 @Entity
 @AllArgsConstructor
+@Table(name = "pick_list")
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Picking extends TrackedId {
+public class PickList extends TrackedOrder implements Printed {
 
 	private static final long serialVersionUID = -3835242947594550479L;
 
@@ -32,29 +35,32 @@ public class Picking extends TrackedId {
 	private User driver;
 
 	@ManyToOne(optional = false)
-	private User helper1;
+	@JoinColumn(name = "lead_helper")
+	private User leadHelper;
 
 	@ManyToOne
-	private User helper2;
+	@JoinColumn(name = "asst_helper")
+	private User asstHelper;
 
-	@Column(nullable = false)
+	@Column(name = "pick_date", nullable = false)
 	private LocalDate pickDate;
 
 	private String remarks;
 
 	@OneToMany
-	@JoinColumn(name = "picking_id")
+	@JoinColumn(name = "pick_list_id")
 	private List<Booking> bookings;
 
-	@ManyToOne
-	private User printedBy;
+	@Column(name = "printed_by")
+	private String printedBy;
 
+	@Column(name = "printed_on")
 	private ZonedDateTime printedOn;
 
-	public Picking(Truck truck, User driver, User helper1, LocalDate pickDate) {
+	public PickList(Truck truck, User driver, User leadHelper, LocalDate pickDate) {
 		this.truck = truck;
 		this.driver = driver;
-		this.helper1 = helper1;
+		this.leadHelper = leadHelper;
 		this.pickDate = pickDate;
 	}
 }

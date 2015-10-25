@@ -5,6 +5,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -21,35 +22,45 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Purchase extends NumberedOrder {
+public class Purchasing extends NumberedOrder {
 
 	private static final long serialVersionUID = -5606817850562768621L;
 
 	@ManyToOne
-	protected User deactivatedBy;
+	@JoinColumn(name = "sent_for_approval_by")
+	private User sentForApprovalBy;
 
-	protected ZonedDateTime deactivatedOn;
+	@Column(name = "sent_for_approval_on")
+	private ZonedDateTime sentForApprovalOn;
 
-	@ManyToOne
-	protected User mailedBy;
-
-	protected ZonedDateTime mailedOn;
-
-	@ManyToOne
-	protected User sentBy;
-
-	protected ZonedDateTime sentOn;
+	private Boolean approved;
 
 	@ManyToOne
-	protected User receivedBy;
+	@JoinColumn(name = "decided_by")
+	private User decidedBy;
 
-	protected ZonedDateTime receivedOn;
+	@Column(name = "decided_on")
+	private ZonedDateTime decidedOn;
 
-	@JoinColumn(name = "purchase_id")
+	@ManyToOne
+	@JoinColumn(name = "sent_to_vendor_by")
+	private User sentToVendorBy;
+
+	@Column(name = "sent_to_vendor_on")
+	private ZonedDateTime sentToVendorOn;
+
+	@ManyToOne
+	@JoinColumn(name = "items_received_by")
+	private User itemsReceivedBy;
+
+	@Column(name = "items_received_on")
+	private ZonedDateTime itemsReceivedOn;
+
+	@JoinColumn(name = "purchasing_id")
 	@OneToMany(cascade = CascadeType.ALL)
-	private List<PurchaseDetail> details;
+	private List<SoldDetail> details;
 
-	public Purchase(Customer customer, LocalDate orderDate) {
+	public Purchasing(Customer customer, LocalDate orderDate) {
 		this.customer = customer;
 		this.orderDate = orderDate;
 	}

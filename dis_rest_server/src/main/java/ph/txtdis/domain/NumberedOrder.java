@@ -15,14 +15,14 @@ import lombok.NoArgsConstructor;
 @MappedSuperclass
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class NumberedOrder extends TrackedId {
+public abstract class NumberedOrder extends TrackedOrder {
 
 	private static final long serialVersionUID = 2042906262421586568L;
 
 	@ManyToOne(optional = false)
 	protected Customer customer;
 
-	@Column(nullable = false)
+	@Column(name = "order_date", nullable = false)
 	protected LocalDate orderDate;
 
 	private String remarks;

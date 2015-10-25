@@ -19,17 +19,23 @@ import ph.txtdis.type.UomType;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {
-        "item_id", "uom" }) )
-public class QtyPerUom extends TrackedId {
+@Table(name = "qty_per_uom", uniqueConstraints = @UniqueConstraint(columnNames = { "item_id", "uom" }) )
+public class QtyPerUom extends TrackedOrder {
 
-    private static final long serialVersionUID = 3802256527344044201L;
+	private static final long serialVersionUID = 3802256527344044201L;
 
-    @Column(nullable = false)
-    private UomType uom;
+	@Column(nullable = false)
+	private UomType uom;
 
-    @Column(nullable = false, precision = 8, scale = 4)
-    private BigDecimal qty;
+	@Column(nullable = false, precision = 8, scale = 4)
+	private BigDecimal qty;
 
-    private boolean isPurchased, isSold, isReported;
+	@Column(name = "is_purchased")
+	private Boolean purchased;
+
+	@Column(name = "is_sold")
+	private Boolean sold;
+
+	@Column(name = "is_reported")
+	private Boolean reported;
 }

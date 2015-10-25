@@ -23,9 +23,9 @@ public interface InvoiceRepository extends SpunRepository<Invoice, Long> {
 	List<Invoice> findByOrderDateBetweenOrderByOrderDateAsc(@Param("start") LocalDate start,
 			@Param("end") LocalDate end);
 
-	Invoice findByPrefixAndNbrIdAndSuffix(@Param("prefix") String prefix, @Param("id") Long id,
+	Invoice findByPrefixAndNumIdAndSuffix(@Param("prefix") String prefix, @Param("id") Long id,
 			@Param("suffix") String suffix);
 
-	Invoice findFirstByPrefixAndSuffixAndNbrIdBetweenOrderByNbrIdDesc(@Param("prefix") String prefix,
+	Invoice findFirstByPrefixAndSuffixAndNumIdBetweenOrderByNumIdDesc(@Param("prefix") String prefix,
 			@Param("suffix") String suffix, @Param("startId") Long startId, @Param("endId") Long endId);
 }

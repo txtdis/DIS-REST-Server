@@ -2,7 +2,7 @@ package ph.txtdis.domain;
 
 import java.util.List;
 
-public interface Detailed<T extends Subtotalled> {
+public interface Detailed {
 
-	List<T> getDetails();
+	List<SoldDetail> getDetails();
 }

@@ -1,15 +1,12 @@
 package ph.txtdis.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import ph.txtdis.domain.Receipt;
+import ph.txtdis.domain.Receiving;
 
 @Repository("receivingRepository")
-public interface ReceivingRepository extends CrudRepository<Receipt, Long> {
+public interface ReceivingRepository extends SpunRepository<Receiving, Long> {
 
-	// @Query("select r.orderDate from Receiving r "
-	// + "where r.reference = ph.txtdis.type.ReceivingReferenceType.PO and
-	// r.referenceId = :id")
-	// LocalDate getDateFromPurchaseOrder(@Param("id") Long id);
+	Receiving findByReferenceId(@Param("refId") Long refId);
 }

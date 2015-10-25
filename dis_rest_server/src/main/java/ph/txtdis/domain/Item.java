@@ -35,8 +35,10 @@ public class Item extends AbstractDeactivatedName {
 	@ManyToOne
 	private ItemFamily family;
 
+	@Column(name = "vendor_id")
 	private String vendorId;
 
+	@Column(name = "is_not_discounted")
 	private boolean notDiscounted;
 
 	@JoinColumn(name = "item_id")

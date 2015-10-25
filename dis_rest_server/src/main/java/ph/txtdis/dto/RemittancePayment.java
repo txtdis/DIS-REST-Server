@@ -17,7 +17,7 @@ public class RemittancePayment {
 
 	public RemittancePayment(RemittanceDetail d) {
 		remitId = d.getRemittance().getId();
-		remitDate = d.getRemittance().getRemitDate();
+		remitDate = d.getRemittance().getDueDate();
 		value = d.getPaymentValue();
 	}
 }

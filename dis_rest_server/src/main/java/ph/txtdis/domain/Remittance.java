@@ -2,14 +2,18 @@ package ph.txtdis.domain;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -20,41 +24,59 @@ import lombok.NoArgsConstructor;
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Remittance extends TrackedId {
+public class Remittance extends TrackedOrder {
 
 	private static final long serialVersionUID = -5860334462169889589L;
 
-	@Column(nullable = false)
-	private LocalDate remitDate;
+	@Column(name = "due_date", nullable = false)
+	private LocalDate dueDate;
 
-	@ManyToOne(optional = false)
-	private Customer bank;
+	@Column(name = "check_id")
+	private Long checkId;
 
-	@Column(nullable = false)
-	private String reference;
+	@Column(name = "drawee_bank", nullable = false)
+	private String draweeBank;
 
-	@Column(nullable = false)
+	@Column(nullable = false, precision = 8, scale = 2)
 	private BigDecimal value;
 
-	@ManyToOne(optional = false)
-	private User collector;
+	@Column(nullable = false)
+	private String payor;
 
 	private String remarks;
+
+	@Column(name = "received_by")
+	private String receivedBy;
+
+	@Column(name = "received_on")
+	private ZonedDateTime receivedOn;
+
+	@Column(name = "deposit_bank")
+	private String depositBank;
+
+	@Column(name = "deposit_date")
+	private LocalDate depositDate;
+
+	@Column(name = "deposit_time")
+	private LocalTime depositTime;
 
 	@JoinColumn(name = "remittance_id")
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<RemittanceDetail> details;
 
-	public Remittance(LocalDate remitDate, Customer bank, String reference, BigDecimal value, User collector) {
-		this.remitDate = remitDate;
-		this.bank = bank;
-		this.reference = reference;
-		this.value = value;
-		this.collector = collector;
-	}
+	@LastModifiedBy
+	@Column(name = "last_modified_by", nullable = false)
+	private String lastModifiedBy;
 
-	@Override
-	public String toString() {
-		return "R/S No. " + getId();
+	@LastModifiedDate
+	@Column(name = "last_modified_on", nullable = false)
+	private ZonedDateTime lastModifiedOn;
+
+	public Remittance(LocalDate dueDate, String draweeBank, String payor, Long checkId, BigDecimal value) {
+		this.dueDate = dueDate;
+		this.draweeBank = draweeBank;
+		this.payor = payor;
+		this.checkId = checkId;
+		this.value = value;
 	}
 }

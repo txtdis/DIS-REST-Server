@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,13 +18,14 @@ import ph.txtdis.type.QualityType;
 @Data
 @Entity
 @AllArgsConstructor
+@Table(name = "stock_take_adjustment")
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StockTakeAdjustment extends TrackedId {
+public class StockTakeAdjustment extends TrackedOrder {
 
 	private static final long serialVersionUID = -1676592025325317933L;
 
-	@Column(nullable = false)
+	@Column(name = "stock_take_date", nullable = false)
 	private LocalDate stockTakeDate;
 
 	@ManyToOne(optional = false)

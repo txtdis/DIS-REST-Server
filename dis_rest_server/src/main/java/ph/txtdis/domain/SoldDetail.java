@@ -3,7 +3,8 @@ package ph.txtdis.domain;
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -13,14 +14,15 @@ import ph.txtdis.type.QualityType;
 import ph.txtdis.type.UomType;
 
 @Data
-@MappedSuperclass
+@Entity
+@Table(name = "sold_detail")
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class SoldDetail extends OrderDetail implements Subtotalled {
+public class SoldDetail extends OrderDetail implements Subtotalled {
 
 	private static final long serialVersionUID = 257754573072417395L;
 
-	@Column(nullable = false)
+	@Column(name = "price", nullable = false, precision = 8, scale = 2)
 	protected BigDecimal priceValue;
 
 	public SoldDetail(Item item, UomType uom, BigDecimal qty, QualityType quality) {

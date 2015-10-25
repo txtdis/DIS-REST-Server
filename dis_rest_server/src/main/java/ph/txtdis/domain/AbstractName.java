@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AbstractName extends TrackedId {
+public class AbstractName extends TrackedOrder {
 
 	private static final long serialVersionUID = -5859599323217964344L;
 

@@ -7,32 +7,35 @@ import javax.persistence.Column;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
-import lombok.AccessLevel;
+import static ph.txtdis.util.Numeric.toPercentRate;
+
+import static java.math.BigDecimal.ZERO;
+
+import static lombok.AccessLevel.PROTECTED;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import ph.txtdis.util.Numeric;
 
 @Data
 @MappedSuperclass
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class SoldOrder<TD extends Subtotalled, D extends Percentage> extends AuditedId
-		implements Detailed<TD>, Discounted<D>
-{
+@NoArgsConstructor(access = PROTECTED)
+public abstract class SoldOrder extends TrackedOrder implements Detailed, Discounted {
 
 	private static final long serialVersionUID = 3715783817464199036L;
 
 	@ManyToOne(optional = false)
 	private Customer customer;
 
-	@ManyToOne
-	private CreditDetail credit;
-
-	@Column(nullable = false)
+	@Column(name = "order_date", nullable = false)
 	private LocalDate orderDate;
 
 	private String remarks;
+
+	public CreditDetail getCredit() {
+		return getCustomer() == null ? null : getCustomer().getCredit(getOrderDate());
+	}
 
 	public Long getCustomerId() {
 		return getCustomer() == null ? null : getCustomer().getId();
@@ -40,6 +43,15 @@ public abstract class SoldOrder<TD extends Subtotalled, D extends Percentage> ex
 
 	public String getCustomerName() {
 		return getCustomer() == null ? null : getCustomer().getName();
+	}
+
+	public BigDecimal getDiscountValue() {
+		return getDiscounts() == null ? ZERO : computeDiscount(getGrossValue());
+	}
+
+	public BigDecimal getGrossValue() {
+		return getDetails() == null ? null
+				: getDetails().stream().map(d -> d.getSubtotalValue()).reduce(ZERO, (a, b) -> a.add(b));
 	}
 
 	public Route getRoute() {
@@ -52,24 +64,15 @@ public abstract class SoldOrder<TD extends Subtotalled, D extends Percentage> ex
 	}
 
 	public BigDecimal getValue() {
-		return getGrossValue() == null ? BigDecimal.ZERO : getGrossValue().subtract(getDiscountValue());
+		return getGrossValue() == null ? ZERO : getGrossValue().subtract(getDiscountValue());
 	}
 
 	private BigDecimal computeDiscount(BigDecimal value) {
-		BigDecimal discount = BigDecimal.ZERO;
-		for (D d : getDiscounts()) {
-			discount = discount.add(value.multiply(Numeric.toPercentRate(d.getPercent())));
+		BigDecimal discount = ZERO;
+		for (Discount d : getDiscounts()) {
+			discount = discount.add(value.multiply(toPercentRate(d.getPercent())));
 			value = value.subtract(discount);
 		}
 		return discount;
-	}
-
-	private BigDecimal getDiscountValue() {
-		return getDiscounts() == null ? BigDecimal.ZERO : computeDiscount(getGrossValue());
-	}
-
-	private BigDecimal getGrossValue() {
-		return getDetails() == null ? null
-				: getDetails().stream().map(d -> d.getSubtotalValue()).reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
 	}
 }

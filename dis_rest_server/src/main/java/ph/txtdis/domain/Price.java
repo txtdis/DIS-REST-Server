@@ -5,6 +5,7 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -18,21 +19,22 @@ import lombok.NoArgsConstructor;
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "item_id", "startDate", "type_id", "channelLimit_id" }) )
-public class Price extends TrackedId implements Comparable<Price> {
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "item_id", "start_date", "type_id", "channel_limit_id" }) )
+public class Price extends TrackedOrder implements Comparable<Price> {
 
 	private static final long serialVersionUID = -5721868302278165093L;
 
 	@ManyToOne(optional = false)
 	private PricingType type;
 
-	@Column(nullable = false)
+	@Column(name = "price", nullable = false)
 	private BigDecimal priceValue;
 
-	@Column(nullable = false)
+	@Column(name = "start_date", nullable = false)
 	private LocalDate startDate;
 
 	@ManyToOne
+	@JoinColumn(name = "channel_limit_id")
 	private Channel channelLimit;
 
 	public Price(PricingType type, BigDecimal priceValue, LocalDate startDate) {

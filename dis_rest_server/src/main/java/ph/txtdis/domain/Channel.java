@@ -11,16 +11,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Channel extends AbstractName implements Comparable<Channel> {
+public class Channel extends AbstractName {
 
-    private static final long serialVersionUID = -8012814058038917889L;
+	private static final long serialVersionUID = -8012814058038917889L;
 
-    public Channel(String name) {
-        super(name);
-    }
-
-    @Override
-    public int compareTo(Channel o) {
-        return toString().compareTo(o.toString());
-    }
+	public Channel(String name) {
+		super(name);
+	}
 }

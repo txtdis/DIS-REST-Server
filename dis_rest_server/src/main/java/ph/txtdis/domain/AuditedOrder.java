@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @MappedSuperclass
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AuditedId extends TrackedId {
+public abstract class AuditedOrder extends TrackedOrder {
 
 	private static final long serialVersionUID = 8939708088215882688L;
 

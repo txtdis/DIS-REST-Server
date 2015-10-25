@@ -19,10 +19,10 @@ public class Payment extends AbstractId {
 
 	private static final long serialVersionUID = 4346280650221114961L;
 
-	@Column(nullable = false)
+	@Column(name = "payment_date", nullable = false)
 	private LocalDate paymentDate;
 
-	@Column(nullable = false)
+	@Column(name = "payment", nullable = false)
 	private BigDecimal paymentValue;
 
 	public Payment(LocalDate paymentDate, BigDecimal paymentValue) {

@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -26,48 +29,57 @@ import ph.txtdis.dto.RemittancePayment;
 @Table(
 // @formatter:off
 	indexes = {
-		@Index(columnList = "customer_id, fullyPaid"),
-		@Index(columnList = "prefix, nbrId, suffix"),
+		@Index(columnList = "customer_id, is_fully_paid"),
+		@Index(columnList = "prefix, id_no, suffix"),
 		@Index(columnList = "booking_id"),
-		@Index(columnList = "fullyPaid"),
-		@Index(columnList = "orderDate") },
+		@Index(columnList = "is_fully_paid"),
+		@Index(columnList = "order_date") },
 	uniqueConstraints =
-		@UniqueConstraint(columnNames = { "prefix", "nbrId", "suffix" }) )
+		@UniqueConstraint(columnNames = { "prefix", "id_no", "suffix" }) )
 //@formatter:on
-public class Invoice extends SoldOrder<InvoiceDetail, InvoiceDiscount> {
+public class Invoice extends SoldOrder {
 
 	private static final long serialVersionUID = -4363805360652350591L;
 
 	private String prefix, suffix;
 
-	private Long nbrId;
+	@Column(name = "id_no")
+	private Long numId;
 
 	@OneToOne
 	private Booking booking;
 
+	@OneToMany
 	@JoinColumn(name = "invoice_id")
-	@OneToMany(cascade = CascadeType.ALL)
-	private List<InvoiceDetail> details;
+	private List<SoldDetail> details;
 
-	@JoinColumn(name = "invoice_id")
-	@OneToMany(cascade = CascadeType.ALL)
-	private List<InvoiceDiscount> discounts;
+	@ManyToMany
+	@JoinTable(name = "invoice_discount", joinColumns = @JoinColumn(name = "invoice_id") ,
+			inverseJoinColumns = @JoinColumn(name = "discount_id") )
+	private List<Discount> discounts;
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
 	private List<RemittanceDetail> remittances;
 
 	@JsonIgnore
+	@Column(name = "is_fully_paid")
 	private boolean fullyPaid;
 
+	@Column(name = "actual", nullable = false, precision = 8, scale = 2)
+	private BigDecimal actualValue;
+
+	public Long getNumId() {
+		return numId == null ? -id : numId;
+	}
+
 	public String getOrderNo() {
-		return prefix() + nbrId + suffix();
+		return prefix() + numId + suffix();
 	}
 
 	public List<RemittancePayment> getPayments() {
 		return getRemittances() == null ? null
-				: getRemittances().stream()
-						.filter(r -> r.getRemittance().getRemitDate().compareTo(LocalDate.now()) <= 0)
+				: getRemittances().stream().filter(r -> r.getRemittance().getDueDate().compareTo(LocalDate.now()) <= 0)
 						.map(r -> new RemittancePayment(r)).collect(Collectors.toList());
 	}
 

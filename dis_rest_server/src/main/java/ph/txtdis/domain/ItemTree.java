@@ -18,14 +18,14 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 //@formatter:off
-@Table(
+@Table(name = "item_tree",
 	indexes = {
 		@Index(columnList = "family_id, parent_id"),
 		@Index(columnList = "family_id") },
 	uniqueConstraints =
 		@UniqueConstraint(columnNames = { "family_id", "parent_id" }) )
 //@formatter:on
-public class ItemTree extends TrackedId {
+public class ItemTree extends TrackedOrder {
 
 	private static final long serialVersionUID = 4058968729625611538L;
 

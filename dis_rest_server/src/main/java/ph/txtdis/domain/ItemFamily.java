@@ -15,8 +15,8 @@ import ph.txtdis.type.ItemTier;
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(indexes = { @Index(columnList = "name") })
-public class ItemFamily extends AbstractName implements Comparable<ItemFamily> {
+@Table(name = "item_family", indexes = { @Index(columnList = "name") })
+public class ItemFamily extends AbstractName {
 
 	private static final long serialVersionUID = 1590751261303247800L;
 
@@ -26,10 +26,5 @@ public class ItemFamily extends AbstractName implements Comparable<ItemFamily> {
 	public ItemFamily(String name, ItemTier tier) {
 		super(name);
 		this.tier = tier;
-	}
-
-	@Override
-	public int compareTo(ItemFamily o) {
-		return toString().compareTo(o.toString());
 	}
 }

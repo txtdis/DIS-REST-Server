@@ -11,40 +11,33 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import ph.txtdis.type.ReceivingReferenceType;
 
 @Data
 @Entity
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Receipt extends NumberedOrder {
+public class Receiving extends NumberedOrder {
 
 	private static final long serialVersionUID = 1717512766392903432L;
 
-	private String partnerReferenceId;
+	@Column(name = "sender_ref_id")
+	private String senderReferenceId;
 
-	@Column(nullable = false)
-	private ReceivingReferenceType reference;
-
-	@Column(nullable = false)
+	@Column(name = "ref_id", nullable = false)
 	private Long referenceId;
 
 	@ManyToOne(optional = false)
 	private User checker;
 
-	@JoinColumn(name = "receipt_id")
+	@JoinColumn(name = "receiving_id")
 	@OneToMany(cascade = CascadeType.ALL)
-	private List<ReceiptDetail> details;
+	private List<SoldDetail> details;
 
-	public Receipt(Customer customer, ReceivingReferenceType reference, Long referenceId, User checker,
-			LocalDate orderDate) {
+	public Receiving(Customer customer, Long referenceId, User checker, LocalDate orderDate) {
 		this.customer = customer;
-		this.reference = reference;
 		this.referenceId = referenceId;
 		this.checker = checker;
 		this.orderDate = orderDate;

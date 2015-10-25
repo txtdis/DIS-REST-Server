@@ -31,16 +31,16 @@ public class Numeric {
 		return dividend.divide(divisor, 4, RoundingMode.HALF_EVEN);
 	}
 
+	public static String format2Place(BigDecimal number) {
+		return isZero(number) ? "" : TWO_PLACE_DECIMAL.format(number);
+	}
+
 	public static String format4Place(BigDecimal number) {
 		return isZero(number) ? "" : FOUR_PLACE_DECIMAL.format(number);
 	}
 
 	public static String formatCurrency(BigDecimal number) {
-		return "₱" + formatDecimal(number);
-	}
-
-	public static String formatDecimal(BigDecimal number) {
-		return isZero(number) ? "" : TWO_PLACE_DECIMAL.format(number);
+		return "₱" + format2Place(number);
 	}
 
 	public static String formatId(Long number) {
@@ -53,6 +53,10 @@ public class Numeric {
 
 	public static String formatPhone(PhoneNumber number) {
 		return number == null || !isPhone(number) ? "" : phoneUtil().formatNumberForMobileDialing(number, "PH", true);
+	}
+
+	public static String formatPrint(BigDecimal number) {
+		return NO_COMMA_DECIMAL.format(number);
 	}
 
 	public static String formatQuantity(BigDecimal number) {

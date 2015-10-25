@@ -20,15 +20,15 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class TrackedId extends AbstractId {
+public abstract class TrackedOrder extends AbstractId {
 
 	private static final long serialVersionUID = -5753015257974898395L;
 
 	@CreatedBy
-	@Column(nullable = false)
+	@Column(name = "created_by", nullable = false)
 	protected String createdBy;
 
 	@CreatedDate
-	@Column(nullable = false)
+	@Column(name = "created_on", nullable = false)
 	protected ZonedDateTime createdOn;
 }

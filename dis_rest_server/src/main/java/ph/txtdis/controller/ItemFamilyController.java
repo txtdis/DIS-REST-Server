@@ -3,6 +3,7 @@ package ph.txtdis.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,7 @@ import ph.txtdis.repository.ItemTreeRepository;
 @RequestMapping("/itemFamilies")
 public class ItemFamilyController extends NameListController<ItemFamilyRepository, ItemFamily> {
 
+	@Autowired
 	private ItemTreeRepository treeRepository;
 
 	private ItemTree tree;
@@ -26,7 +28,7 @@ public class ItemFamilyController extends NameListController<ItemFamilyRepositor
 	private List<ItemFamily> list;
 
 	@RequestMapping(path = "/ancestry", method = RequestMethod.GET)
-	public ResponseEntity<?> find(@RequestParam ItemFamily family) {
+	public ResponseEntity<?> find(@RequestParam("family") ItemFamily family) {
 		setItemAncentryByTraversingTree(family);
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}

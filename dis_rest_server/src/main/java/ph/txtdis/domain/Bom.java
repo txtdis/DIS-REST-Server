@@ -18,7 +18,7 @@ import ph.txtdis.type.UomType;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Bom extends TrackedId {
+public class Bom extends TrackedOrder {
 
     private static final long serialVersionUID = -86213987350272414L;
 

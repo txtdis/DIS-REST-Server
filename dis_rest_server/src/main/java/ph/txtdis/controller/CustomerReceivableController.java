@@ -32,13 +32,14 @@ public class CustomerReceivableController extends ReceivableController {
 
 	private List<BigDecimal> totals;
 
-	private String customer;
+	private String customerName;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<?> customerReceivableReport(@RequestParam("customer") Customer c,
 			@RequestParam("lowerDayCount") long low, @RequestParam("upperDayCount") long up) {
 		extractDataFromInvoices(c, low, up);
-		CustomerReceivableReport r = new CustomerReceivableReport(receivables, totals, customer, ZonedDateTime.now());
+		CustomerReceivableReport r = new CustomerReceivableReport(receivables, totals, customerName,
+				ZonedDateTime.now());
 		return new ResponseEntity<>(r == null ? null : r, HttpStatus.OK);
 	}
 
@@ -64,8 +65,10 @@ public class CustomerReceivableController extends ReceivableController {
 	}
 
 	private void setCustomer(List<Invoice> list) {
+		if (list.isEmpty())
+			return;
 		String n = list.get(0).getCustomer().getName();
-		customer = WordUtils.capitalizeFully(n);
+		customerName = WordUtils.capitalizeFully(n);
 	}
 
 	private void setData(long low, long up, List<Invoice> list) {

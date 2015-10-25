@@ -13,9 +13,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Truck extends AbstractName {
 
-    private static final long serialVersionUID = -8355723680264208431L;
+	private static final long serialVersionUID = -8355723680264208431L;
 
-    public Truck(String name) {
-        super(name);
-    }
+	public Truck(String name) {
+		super(name);
+	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 }

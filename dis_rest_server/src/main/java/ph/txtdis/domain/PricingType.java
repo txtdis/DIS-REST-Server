@@ -1,6 +1,7 @@
 package ph.txtdis.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Entity
+@Table(name = "pricing_type")
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PricingType extends AbstractName {
