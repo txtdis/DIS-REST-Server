@@ -1,20 +1,23 @@
 package ph.txtdis.dto;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.util.List;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PickList {
+@EqualsAndHashCode(callSuper = true)
+public class PickList extends AbstractTrackedId<Long> {
 
-    private long itemId;
+	private String truck, driver, leadHelper, asstHelper, remarks, printedBy;
 
-    private String itemName;
+	private LocalDate pickDate;
 
-    private BigDecimal qty;
+	private List<Billable> bookings;
+
+	private ZonedDateTime printedOn;
+
+	private Boolean printedAll;
 }

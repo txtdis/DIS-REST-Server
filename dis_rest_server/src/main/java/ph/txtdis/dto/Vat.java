@@ -1,15 +1,14 @@
 package ph.txtdis.dto;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Properties;
 
 import lombok.Getter;
-import ph.txtdis.domain.Invoice;
-import ph.txtdis.util.Numeric;
+import lombok.NoArgsConstructor;
+import ph.txtdis.domain.Billing;
 
 @Getter
+@NoArgsConstructor
 public class Vat {
 
 	private Long id;
@@ -28,43 +27,21 @@ public class Vat {
 
 	private BigDecimal vatValue;
 
-	public Vat() {
-		value = new BigDecimal("1000.00");
-		vatValue = vatValue(value);
-	}
-
-	public Vat(Invoice i) {
+	public Vat(Billing i) {
 		id = i.getId();
 		prefix = i.getPrefix();
 		nbrId = i.getNumId();
 		suffix = i.getSuffix();
-		customer = i.getCustomerName();
+		customer = i.getCustomer().getName();
 		orderDate = i.getOrderDate();
-		value = i.getValue();
-		vatValue = vatValue(value);
+		value = i.getTotalValue();
 	}
 
-	private Properties loadProperties() throws IOException {
-		Properties props = new Properties();
-		props.load(this.getClass().getResourceAsStream("/config/application.properties"));
-		return props;
+	public void setValue(BigDecimal v) {
+		value = v;
 	}
 
-	private Properties properties() {
-		try {
-			return loadProperties();
-		} catch (IOException e) {
-			return null;
-		}
-	}
-
-	private BigDecimal vatRate() {
-		String vatText = properties().getProperty("vat.percent");
-		BigDecimal vatPerCent = new BigDecimal(vatText);
-		return Numeric.toPercentRate(vatPerCent).add(BigDecimal.ONE);
-	}
-
-	private BigDecimal vatValue(BigDecimal value) {
-		return value == null ? null : value.subtract(Numeric.divide(value, vatRate()));
+	public void setVat(BigDecimal v) {
+		vatValue = v;
 	}
 }

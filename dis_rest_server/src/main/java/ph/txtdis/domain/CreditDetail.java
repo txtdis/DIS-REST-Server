@@ -23,10 +23,10 @@ public class CreditDetail extends TrackedOrder {
 	private static final long serialVersionUID = 1655742390812653142L;
 
 	@Column(name = "term")
-	private Integer termInDays;
+	private int termInDays;
 
 	@Column(name = "grace_period")
-	private Integer gracePeriodInDays;
+	private int gracePeriodInDays;
 
 	@Column(name = "credit_limit", precision = 9, scale = 2)
 	private BigDecimal creditLimit;

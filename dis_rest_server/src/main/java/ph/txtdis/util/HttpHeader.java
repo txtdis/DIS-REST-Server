@@ -12,13 +12,13 @@ public class HttpHeader {
 	private MultiValueMap<String, String> headers;
 
 	public MultiValueMap<String, String> headers() {
-		if (Spring.isAuthenticated())
+		if (SpringUtils.isAuthenticated())
 			return headers;
 		return headers = createHeaders();
 	}
 
 	private String auth() {
-		return Spring.username() + ":" + Spring.password();
+		return SpringUtils.username() + ":" + SpringUtils.password();
 	}
 
 	private String authHeader() {

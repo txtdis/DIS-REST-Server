@@ -1,5 +1,9 @@
 package ph.txtdis.printer;
 
+import static ph.txtdis.util.NumberUtils.divide;
+import static ph.txtdis.util.NumberUtils.formatPrint;
+import static ph.txtdis.util.NumberUtils.formatQuantity;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -9,23 +13,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import static ph.txtdis.util.Numeric.formatPrint;
-import static ph.txtdis.util.Numeric.formatQuantity;
-
 import static org.apache.commons.lang3.StringUtils.center;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 import static org.apache.commons.lang3.StringUtils.rightPad;
 import static org.apache.commons.lang3.StringUtils.substring;
 
-import ph.txtdis.domain.Booking;
-import ph.txtdis.domain.CreditDetail;
+import static ph.txtdis.util.DateTimeUtils.formatDate;
+
+import ph.txtdis.domain.Billing;
+import ph.txtdis.domain.BillingDetail;
+import ph.txtdis.domain.Customer;
 import ph.txtdis.domain.Discount;
-import ph.txtdis.domain.SoldDetail;
-import ph.txtdis.util.Numeric;
-import ph.txtdis.util.Temporal;
+import ph.txtdis.util.NumberUtils;
 
 @Component("salesOrderPrinter")
-public class SalesOrderPrinter extends Printer<Booking> {
+public class SalesOrderPrinter extends Printer<Billing> {
 
 	private static final int HALF_COLUMN = (COLUMN_WIDTH / 2) - 2;
 
@@ -40,64 +42,51 @@ public class SalesOrderPrinter extends Printer<Booking> {
 	@Value("${client.initials}")
 	private String clientInitials;
 
-	private String customer() {
-		String s = entity.getCustomerName();
-		return s.length() <= 21 ? s : substring(entity.getCustomerName(), 0, 21);
+	private String barangay() {
+		String s = customer().getBarangay() + ", " + customer().getCity();
+		return StringUtils.substring(s, 0, COLUMN_WIDTH - SUBHEADER_LABEL_WIDTH);
+	}
+
+	private Customer customer() {
+		return entity.getCustomer();
+	}
+
+	private String customerName() {
+		String s = customer().getName();
+		return s.length() <= 21 ? s : substring(s, 0, 21);
 	}
 
 	private String discount() {
-		return Numeric.isZero(discountValue()) ? "--" : formatPrint(discountValue());
+		return NumberUtils.isZero(discountValue()) ? "--" : formatPrint(discountValue());
 	}
 
 	private BigDecimal discountValue() {
-		return entity.getDiscountValue();
+		return entity.getGrossValue().subtract(entity.getTotalValue());
 	}
 
-	private String due() {
-		int i = term();
-		return "DUE " + (i == 0 ? "TODAY" : dueDate(i));
-	}
-
-	private String dueDate(int i) {
-		LocalDate d = entity.getOrderDate().plusDays(i);
-		return Temporal.formatDate(d);
-	}
-
-	private String getPrice(SoldDetail detail) {
-		return formatPrint(detail.getPriceValue());
+	private String dueText() {
+		LocalDate d = entity.getDueDate();
+		return "DUE " + (d.isEqual(LocalDate.now()) ? "TODAY" : formatDate(d));
 	}
 
 	private int getRemaingLines() {
 		return linesPerPage() - entity.getDetails().size();
 	}
 
-	private String getSubtotal(SoldDetail detail) {
-		return formatPrint(detail.getQty().multiply(detail.getPriceValue()));
+	private String grossText() {
+		return formatPrint(entity.getGrossValue());
 	}
 
-	private String gross() {
-		return formatPrint(grossValue());
-	}
-
-	private BigDecimal grossValue() {
-		return entity.getGrossValue();
-	}
-
-	private String itemName(SoldDetail detail) {
+	private String itemName(BillingDetail detail) {
 		return rightPad(detail.getItem().getName(), 19);
 	}
 
-	private String itemQty(SoldDetail detail) {
+	private String itemQty(BillingDetail detail) {
 		return leftPad(formatQuantity(detail.getQty()), 3);
 	}
 
 	private int linesPerPage() {
 		return Integer.valueOf(linesPerPage);
-	}
-
-	private String location() {
-		String s = entity.getCustomer().getBarangay() + ", " + entity.getCustomer().getCity();
-		return StringUtils.substring(s, 0, COLUMN_WIDTH - SUBHEADER_LABEL_WIDTH);
 	}
 
 	private String percent() {
@@ -110,88 +99,98 @@ public class SalesOrderPrinter extends Printer<Booking> {
 		return StringUtils.removeEnd(s, " * ");
 	}
 
-	private String price(SoldDetail detail) {
-		return leftPad(getPrice(detail) + "@", 8);
+	private String price(BillingDetail detail) {
+		return leftPad(priceText(detail) + "@", 8);
+	}
+
+	private String priceText(BillingDetail detail) {
+		return formatPrint(detail.getPriceValue());
+	}
+
+	private void println(String s) {
+		printer.println(s);
 	}
 
 	private void printNothingFollowsFollowedByBlanks() {
-		printer.println(center("** NOTHING FOLLOWS **", COLUMN_WIDTH));
+		println(center("** NOTHING FOLLOWS **", COLUMN_WIDTH));
 		for (int i = 0; i < getRemaingLines(); i++)
-			printer.println();
+			println("");
 	}
 
-	private String subtotal(SoldDetail detail) {
-		return leftPad(getSubtotal(detail), 9);
+	private String subtotalColumn(BillingDetail detail) {
+		return leftPad(subtotalText(detail), 9);
 	}
 
-	private int term() {
-		CreditDetail c = entity.getCredit();
-		return c == null ? 0 : c.getTermInDays();
+	private String subtotalText(BillingDetail d) {
+		return formatPrint(subtotalValue(d));
+	}
+
+	private BigDecimal subtotalValue(BillingDetail d) {
+		return d.getPriceValue().multiply(d.getQty());
 	}
 
 	private String total() {
-		return formatPrint(totalValue());
+		String s = formatPrint(entity.getTotalValue());
+		return leftPad(s, 9);
 	}
 
-	private BigDecimal totalValue() {
-		return entity.getValue();
-	}
-
-	private String uom(SoldDetail detail) {
+	private String uom(BillingDetail detail) {
 		return detail.getUom() + " ";
 	}
 
 	private String vat() {
-		BigDecimal vat = totalValue().subtract(vatableValue());
-		return formatPrint(vat);
+		BigDecimal vat = entity.getTotalValue().subtract(vatableValue());
+		String s = formatPrint(vat);
+		return leftPad(s, 9);
 	}
 
 	private String vatable() {
-		return formatPrint(vatableValue());
+		String s = formatPrint(vatableValue());
+		return leftPad(s, 9);
 	}
 
 	private BigDecimal vatableValue() {
-		return Numeric.divide(totalValue(), new BigDecimal("1." + vatValue));
+		return divide(entity.getTotalValue(), new BigDecimal("1." + vatValue));
 	}
 
 	@Override
 	protected void printDetails() {
-		for (SoldDetail d : entity.getDetails())
-			printer.println(itemQty(d) + uom(d) + itemName(d) + price(d) + subtotal(d));
+		for (BillingDetail d : entity.getDetails())
+			println(itemQty(d) + uom(d) + itemName(d) + price(d) + subtotalColumn(d));
 		if (getRemaingLines() > 0)
 			printNothingFollowsFollowedByBlanks();
 	}
 
 	@Override
 	protected void printFooter() {
-		printer.println(leftPad("--------", COLUMN_WIDTH));
-		printer.println(leftPad("TOTAL", 33) + leftPad(gross(), 9));
-		printer.println(leftPad(percent() + " LESS", 24) + leftPad(discount(), 18));
-		printer.println(leftPad("VATABLE", 24) + leftPad(vatable(), 9) + leftPad("--", 9));
-		printer.println(leftPad(vatValue + "% VAT", 24) + leftPad(vat(), 9) + leftPad("--", 9));
-		printer.println(leftPad("--------", COLUMN_WIDTH));
-		printer.println(leftPad("NET", 33) + leftPad(total(), 9));
-		printer.println(leftPad("========", COLUMN_WIDTH));
-		printer.println();
-		printer.println(leftPad(center("PREPARED BY:", HALF_COLUMN), 4) + center("RECEIVED BY:", HALF_COLUMN));
-		printer.println(leftPad(leftPad("", HALF_COLUMN, "_"), 4) + leftPad("", HALF_COLUMN, "_"));
-		printer.println(leftPad(center(clientInitials, HALF_COLUMN), 4) + center(customer(), HALF_COLUMN));
-		printer.println();
-		printer.println("ORDER #" + entity.getId());
+		println(leftPad("--------", COLUMN_WIDTH));
+		println(leftPad("TOTAL", 33) + leftPad(grossText(), 9));
+		println(leftPad(percent() + " LESS", 24) + leftPad(discount(), 18));
+		println(leftPad("VATABLE", 24) + vatable() + leftPad("--", 9));
+		println(leftPad(vatValue + "% VAT", 24) + vat() + leftPad("--", 9));
+		println(leftPad("--------", COLUMN_WIDTH));
+		println(leftPad("NET", 33) + total());
+		println(leftPad("========", COLUMN_WIDTH));
+		println("");
+		println(rightPad(center("PREPARED BY:", HALF_COLUMN), 4) + center("RECEIVED BY:", HALF_COLUMN));
+		println(rightPad(leftPad("", HALF_COLUMN, "_"), 4) + leftPad("", HALF_COLUMN, "_"));
+		println(rightPad(center(clientInitials, HALF_COLUMN), 4) + center(customerName(), HALF_COLUMN));
+		println("");
+		println("ORDER #" + entity.getId());
 		printEndOfPage();
 	}
 
 	@Override
 	protected void printSubheader() throws IOException {
-		printer.println("DATE   : " + Temporal.formatDate(entity.getOrderDate()));
-		printer.println("SOLD TO: " + customer());
-		printer.println("ADDRESS: " + entity.getCustomer().getStreet());
-		printer.println("         " + location());
+		println("DATE   : " + formatDate(entity.getOrderDate()));
+		println("SOLD TO: " + customerName());
+		println("ADDRESS: " + customer().getStreet());
+		println("         " + barangay());
 		printLarge();
-		printer.println(center(due(), HALF_COLUMN));
+		println(center(dueText(), HALF_COLUMN));
 		printNormal();
 		printDashes();
-		printer.println(center("PARTICULARS", COLUMN_WIDTH));
+		println(center("PARTICULARS", COLUMN_WIDTH));
 		printDashes();
 	}
 }

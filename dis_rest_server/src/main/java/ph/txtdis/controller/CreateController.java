@@ -25,18 +25,18 @@ public abstract class CreateController<R extends CrudRepository<T, ID>, T, ID ex
 		return new ResponseEntity<T>(entity, httpHeaders(uri(entity)), HttpStatus.CREATED);
 	}
 
+	protected MultiValueMap<String, String> httpHeaders(URI uri) {
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setLocation(uri);
+		return httpHeaders;
+	}
+
 	protected abstract String pathName();
 
 	protected abstract Object pathObject(T entity);
 
-	private <P> URI uri(T entity) {
+	protected <P> URI uri(T entity) {
 		return ServletUriComponentsBuilder.fromCurrentContextPath().path(pathName()).buildAndExpand(pathObject(entity))
 				.toUri();
-	}
-
-	private MultiValueMap<String, String> httpHeaders(URI uri) {
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setLocation(uri);
-		return httpHeaders;
 	}
 }

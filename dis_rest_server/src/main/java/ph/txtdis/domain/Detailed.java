@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface Detailed {
 
-	List<SoldDetail> getDetails();
+	List<BillingDetail> getDetails();
 }

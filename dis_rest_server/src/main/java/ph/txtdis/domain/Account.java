@@ -18,19 +18,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "route_id", "startDate" }) )
-public class Account extends TrackedOrder implements Comparable<Account> {
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "route_id", "start_date" }) )
+public class Account extends TrackedOrder {
 
 	private static final long serialVersionUID = -3816774251745575218L;
 
 	@Column(nullable = false)
 	private String seller;
 
-	@Column(nullable = false)
+	@Column(name = "start_date", nullable = false)
 	private LocalDate startDate;
-
-	@Override
-	public int compareTo(Account a) {
-		return getStartDate().compareTo(a.getStartDate());
-	}
 }

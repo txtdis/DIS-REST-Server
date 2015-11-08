@@ -1,9 +1,6 @@
 package ph.txtdis;
 
 import static java.util.Arrays.asList;
-import static ph.txtdis.type.ItemType.PURCHASED;
-import static ph.txtdis.type.UomType.CS;
-import static ph.txtdis.type.UomType.PC;
 import static ph.txtdis.type.UserType.ADMIN;
 import static ph.txtdis.type.UserType.AUDITOR;
 import static ph.txtdis.type.UserType.DRIVER;
@@ -13,11 +10,8 @@ import static ph.txtdis.type.UserType.HELPER;
 import static ph.txtdis.type.UserType.MANAGER;
 import static ph.txtdis.type.UserType.SELLER;
 import static ph.txtdis.type.UserType.STORE_KEEPER;
-import static ph.txtdis.type.VolumeDiscountType.SET;
+import static ph.txtdis.util.SpringUtils.encode;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -25,115 +19,30 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
-import static java.math.BigDecimal.ONE;
-import static java.math.BigDecimal.TEN;
-
-import static ph.txtdis.util.Spring.encode;
-
 import static ph.txtdis.type.LocationType.BARANGAY;
 import static ph.txtdis.type.LocationType.CITY;
 import static ph.txtdis.type.LocationType.PROVINCE;
 
-import static ph.txtdis.type.QualityType.BAD;
-import static ph.txtdis.type.QualityType.GOOD;
-
-import static ph.txtdis.type.CustomerType.CASHIER;
-import static ph.txtdis.type.CustomerType.OUTLET;
-import static ph.txtdis.type.CustomerType.VENDOR;
-
-import static ph.txtdis.type.ItemTier.CATEGORY;
-import static ph.txtdis.type.ItemTier.PRINCIPAL;
-
-import static ph.txtdis.type.VisitFrequency.F2;
-import static ph.txtdis.type.VisitFrequency.F4;
-
-import ph.txtdis.domain.Account;
 import ph.txtdis.domain.Authority;
-import ph.txtdis.domain.Booking;
 import ph.txtdis.domain.Channel;
-import ph.txtdis.domain.Customer;
-import ph.txtdis.domain.Discount;
-import ph.txtdis.domain.Invoice;
-import ph.txtdis.domain.InvoiceBooklet;
-import ph.txtdis.domain.Item;
-import ph.txtdis.domain.ItemFamily;
-import ph.txtdis.domain.ItemTree;
 import ph.txtdis.domain.Location;
 import ph.txtdis.domain.LocationTree;
-import ph.txtdis.domain.PickList;
-import ph.txtdis.domain.Price;
 import ph.txtdis.domain.PricingType;
-import ph.txtdis.domain.Purchasing;
-import ph.txtdis.domain.QtyPerUom;
-import ph.txtdis.domain.Receiving;
-import ph.txtdis.domain.Remittance;
-import ph.txtdis.domain.RemittanceDetail;
-import ph.txtdis.domain.Route;
-import ph.txtdis.domain.Routing;
-import ph.txtdis.domain.SoldDetail;
-import ph.txtdis.domain.StockTake;
-import ph.txtdis.domain.StockTakeDetail;
-import ph.txtdis.domain.StockTakeReconciliation;
 import ph.txtdis.domain.Truck;
 import ph.txtdis.domain.User;
-import ph.txtdis.domain.VolumeDiscount;
-import ph.txtdis.domain.Warehouse;
-import ph.txtdis.repository.BookingRepository;
 import ph.txtdis.repository.ChannelRepository;
-import ph.txtdis.repository.CustomerRepository;
-import ph.txtdis.repository.InvoiceBookletRepository;
-import ph.txtdis.repository.InvoiceRepository;
-import ph.txtdis.repository.ItemFamilyRepository;
-import ph.txtdis.repository.ItemRepository;
-import ph.txtdis.repository.ItemTreeRepository;
 import ph.txtdis.repository.LocationRepository;
 import ph.txtdis.repository.LocationTreeRepository;
-import ph.txtdis.repository.PickListRepository;
 import ph.txtdis.repository.PricingTypeRepository;
-import ph.txtdis.repository.PurchaseRepository;
-import ph.txtdis.repository.ReceivingRepository;
-import ph.txtdis.repository.RemittanceRepository;
-import ph.txtdis.repository.RouteRepository;
-import ph.txtdis.repository.StockTakeReconciliationRepository;
-import ph.txtdis.repository.StockTakeRepository;
 import ph.txtdis.repository.TruckRepository;
 import ph.txtdis.repository.UserRepository;
-import ph.txtdis.repository.WarehouseRepository;
-import ph.txtdis.type.UomType;
 import ph.txtdis.type.UserType;
 
 @Configuration("persistenceConfiguration")
 public class PersistenceConfiguration {
 
-	private static final BigDecimal TWO = new BigDecimal(2);
-
-	private static final BigDecimal FIVE = new BigDecimal("5.00");
-
-	private static final BigDecimal TWENTY = new BigDecimal(20);
-
-	@Autowired
-	private BookingRepository bookingRepo;
-
 	@Autowired
 	private ChannelRepository channelRepo;
-
-	@Autowired
-	private CustomerRepository customerRepo;
-
-	@Autowired
-	private InvoiceBookletRepository bookletRepo;
-
-	@Autowired
-	private InvoiceRepository invoiceRepo;
-
-	@Autowired
-	private ItemFamilyRepository familyRepo;
-
-	@Autowired
-	private ItemRepository itemRepo;
-
-	@Autowired
-	private ItemTreeRepository treeRepo;
 
 	@Autowired
 	private LocationRepository locRepo;
@@ -142,107 +51,13 @@ public class PersistenceConfiguration {
 	private LocationTreeRepository locTreeRepo;
 
 	@Autowired
-	private PickListRepository pickRepo;
-
-	@Autowired
 	private PricingTypeRepository pricingTypeRepo;
-
-	@Autowired
-	private PurchaseRepository purchaseRepo;
-
-	@Autowired
-	private ReceivingRepository receiptRepo;
-
-	@Autowired
-	private RemittanceRepository remittanceRepo;
-
-	@Autowired
-	private RouteRepository routeRepo;
-
-	@Autowired
-	private StockTakeRepository stockTakeRepo;
-
-	@Autowired
-	private StockTakeReconciliationRepository stockTakeReconciliationRepo;
 
 	@Autowired
 	private TruckRepository truckRepo;
 
 	@Autowired
 	private UserRepository userRepo;
-
-	@Autowired
-	private WarehouseRepository warehouseRepo;
-
-	private PricingType purchase, dealer;
-
-	private Item pineSliceFlat;
-
-	private ItemFamily pineSolid;
-
-	private BigDecimal pineSliceFlatListPricePerCS;
-
-	private QtyPerUom cs() {
-		return new QtyPerUom(CS, new BigDecimal(24), true, true, true);
-	}
-
-	private List<SoldDetail> dryStallBookingDetails() {
-		SoldDetail dryStallBookingDetail = new SoldDetail(pineSliceFlat, CS, TWO, GOOD);
-		dryStallBookingDetail.setPriceValue(pineSliceFlatListPricePerCS);
-		return asList(dryStallBookingDetail);
-	}
-
-	private LocalDate newDate() {
-		return LocalDate.now();
-	}
-
-	private QtyPerUom pc() {
-		return new QtyPerUom(PC, ONE, false, true, false);
-	}
-
-	private Price pineSlice15ListPricingPerPC() {
-		Price pineSlice15ListPricingPerPC = new Price(dealer, new BigDecimal(42.48), startDate());
-		return pineSlice15ListPricingPerPC;
-	}
-
-	private List<Price> pineSlice15Prices() {
-		List<Price> prices15 = asList(pineSlice15PurchasePricingPerPC(), pineSlice15ListPricingPerPC());
-		return prices15;
-	}
-
-	private Price pineSlice15PurchasePricingPerPC() {
-		Price pineSlice15PurchasePricingPerPC = new Price(purchase, new BigDecimal(37.66), startDate());
-		return pineSlice15PurchasePricingPerPC;
-	}
-
-	private Price pineSliceFlatListPricePerPC() {
-		return new Price(dealer, new BigDecimal(23.48), startDate());
-	}
-
-	private Price pineSliceFlatNewPurchasePricePerPC() {
-		return new Price(purchase, new BigDecimal(21.70), newDate());
-	}
-
-	private Price pineSliceFlatOldPurchasePricePerPC() {
-		return new Price(purchase, new BigDecimal(20.70), startDate());
-	}
-
-	private List<Price> pineSliceFlatPrices() {
-		return asList(pineSliceFlatOldPurchasePricePerPC(), pineSliceFlatNewPurchasePricePerPC(),
-				pineSliceFlatListPricePerPC());
-	}
-
-	private List<QtyPerUom> pineSliceQtyPerUom() {
-		return asList(pc(), cs());
-	}
-
-	private VolumeDiscount pineSliceVolumeDiscount() {
-		return new VolumeDiscount(SET, PC, 24, new BigDecimal(0.15), startDate());
-	}
-
-	private List<VolumeDiscount> pineSliceVolumeDiscounts() {
-		return asList(pineSliceVolumeDiscount());
-	}
 
 	@PostConstruct
 	private void start() {
@@ -251,14 +66,14 @@ public class PersistenceConfiguration {
 
 		List<Authority> manager = asList(new Authority(MANAGER));
 		List<Authority> admin = asList(new Authority(ADMIN));
-		List<Authority> cashier = asList(new Authority(UserType.CASHIER));
 		List<Authority> storeKeeper = asList(new Authority(STORE_KEEPER));
 		List<Authority> finance = asList(new Authority(FINANCE));
 		List<Authority> auditor = asList(new Authority(AUDITOR));
 		List<Authority> seller = asList(new Authority(SELLER));
 		List<Authority> driver = asList(new Authority(DRIVER));
 		List<Authority> helper = asList(new Authority(HELPER));
-		List<Authority> guest = asList(new Authority(GUEST));
+		asList(new Authority(UserType.CASHIER));
+		asList(new Authority(GUEST));
 
 		User sysgen = new User("SYSGEN", encode("I'mSysGen4txtDIS@PostgreSQL"), manager);
 		userRepo.save(sysgen);
@@ -1318,437 +1133,12 @@ public class PersistenceConfiguration {
 		locTreeRepo.save(new LocationTree(bagong_silang, caloocan));
 		locTreeRepo.save(new LocationTree(camarin, caloocan));
 
-		purchase = pricingTypeRepo.save(new PricingType("PURCHASE"));
-		dealer = pricingTypeRepo.save(new PricingType("DEALER"));
+		pricingTypeRepo.save(new PricingType("PURCHASE"));
+		pricingTypeRepo.save(new PricingType("DEALER"));
 		pricingTypeRepo.save(new PricingType("SUPERMARKET"));
 
 		truckRepo.save(new Truck("RCR359"));
 		truckRepo.save(new Truck("RJT815"));
 		truckRepo.save(new Truck("RJS966"));
-
-		// TODO
-		if (userRepo.count() >= 1)
-			return;
-
-		userRepo.save(new User("MICHELLE", encode("TWEETY"), auditor));
-		userRepo.save(new User("ANGIE", encode("Angelica"), admin));
-		userRepo.save(new User("MENNEN", encode("Mennen"), storeKeeper));
-		userRepo.save(new User("MHON", encode("NOMAR"), guest));
-		userRepo.save(new User("IRENE", encode("magnum08"), cashier));
-
-		User dsp1 = userRepo.save(new User("OGIE", encode("password"), seller));
-		User dsp2 = userRepo.save(new User("PHILLIP", encode("password"), seller));
-		User dsp3 = userRepo.save(new User("BONG", encode("password"), seller));
-		User dsp4 = userRepo.save(new User("RANDY", encode("password"), seller));
-		User dsp5 = userRepo.save(new User("ROBERT", encode("password"), seller));
-		User dsp6 = userRepo.save(new User("HENRY", encode("password"), seller));
-		User dsp7 = userRepo.save(new User("ROLAND", encode("password"), seller));
-
-		truckRepo.save(new Truck("RDM801"));
-		Truck kdl170 = truckRepo.save(new Truck("KDL170"));
-		Truck wsn519 = truckRepo.save(new Truck("WSN519"));
-
-		Route s41 = new Route("S41");
-		s41.setSellerHistory(asList(new Account(dsp1.getUsername(), startDate())));
-		s41 = routeRepo.save(s41);
-
-		Route s42 = new Route("S42");
-		s42.setSellerHistory(asList(new Account(dsp2.getUsername(), startDate())));
-		s42 = routeRepo.save(s42);
-
-		Route s43 = new Route("S43");
-		s43.setSellerHistory(asList(new Account(dsp3.getUsername(), startDate())));
-		s43 = routeRepo.save(s43);
-
-		Route s44 = new Route("S44");
-		s44.setSellerHistory(asList(new Account(dsp4.getUsername(), startDate())));
-		s44 = routeRepo.save(s44);
-
-		routeRepo.save(new Route("S45"));
-
-		Route pms1 = new Route("PMS1");
-		pms1.setSellerHistory(asList(new Account(dsp5.getUsername(), startDate())));
-		pms1 = routeRepo.save(pms1);
-
-		Route pms2 = new Route("PMS2");
-		pms2.setSellerHistory(asList(new Account(dsp6.getUsername(), startDate())));
-		pms2 = routeRepo.save(pms2);
-
-		Route pms3 = new Route("PMS3");
-		pms3.setSellerHistory(asList(new Account(dsp7.getUsername(), startDate())));
-		pms3 = routeRepo.save(pms3);
-
-		User larry = userRepo.save(new User("LARRY", encode("password"), driver));
-		User vicente = userRepo.save(new User("VICENTE", encode("password"), driver));
-		userRepo.save(new User("NOLI", encode("password"), driver));
-		User mark = userRepo.save(new User("MARK", encode("password"), helper));
-		userRepo.save(new User("MICHAEL", encode("password"), helper));
-		User tata = userRepo.save(new User("TATA", encode("password"), helper));
-		userRepo.save(new User("KEVIN", encode("password"), helper));
-		userRepo.save(new User("JEFF", encode("password"), helper));
-		userRepo.save(new User("RENE", encode("password"), helper));
-
-		ItemFamily delMonte = familyRepo.save(new ItemFamily("DEL MONTE", PRINCIPAL));
-		ItemFamily cheese = familyRepo.save(new ItemFamily("CHEESE MAGIC", CATEGORY));
-		ItemFamily fruit = familyRepo.save(new ItemFamily("FRUITS", CATEGORY));
-		ItemFamily ketchup = familyRepo.save(new ItemFamily("KETCHUP", CATEGORY));
-		ItemFamily others = familyRepo.save(new ItemFamily("OTHERS", CATEGORY));
-		ItemFamily pasta = familyRepo.save(new ItemFamily("PASTA", CATEGORY));
-		ItemFamily paste = familyRepo.save(new ItemFamily("PASTE", CATEGORY));
-		ItemFamily juice = familyRepo.save(new ItemFamily("PINE JUICE", CATEGORY));
-		ItemFamily meal = familyRepo.save(new ItemFamily("Q&E MEAL MIXES", CATEGORY));
-		ItemFamily sauce = familyRepo.save(new ItemFamily("SPAGHETTI SAUCE", CATEGORY));
-		ItemFamily tidbit = familyRepo.save(new ItemFamily("TIDBITS 115G", CATEGORY));
-		ItemFamily vinegar = familyRepo.save(new ItemFamily("VINEGAR", CATEGORY));
-		pineSolid = familyRepo.save(new ItemFamily("SOLIDS", CATEGORY));
-
-		treeRepo.save(new ItemTree(cheese, delMonte));
-		treeRepo.save(new ItemTree(fruit, delMonte));
-		treeRepo.save(new ItemTree(ketchup, delMonte));
-		treeRepo.save(new ItemTree(others, delMonte));
-		treeRepo.save(new ItemTree(pasta, delMonte));
-		treeRepo.save(new ItemTree(paste, delMonte));
-		treeRepo.save(new ItemTree(juice, delMonte));
-		treeRepo.save(new ItemTree(meal, delMonte));
-		treeRepo.save(new ItemTree(pineSolid, delMonte));
-		treeRepo.save(new ItemTree(sauce, delMonte));
-		treeRepo.save(new ItemTree(tidbit, delMonte));
-		treeRepo.save(new ItemTree(vinegar, delMonte));
-
-		Warehouse edsa = warehouseRepo.save(new Warehouse("EDSA"));
-
-		List<Discount> discounts1level = Arrays.asList(new Discount(1, TEN, null, startDate()));
-		List<Discount> discounts2levels = Arrays.asList(new Discount(1, FIVE, null, startDate()),
-				new Discount(2, ONE, null, startDate()));
-
-		Customer magnum_talayan = new Customer("MAGNUM TALAYAN", CASHIER);
-		magnum_talayan.setStreet("MARIA CLARA");
-		magnum_talayan.setBarangay(talayan);
-		magnum_talayan.setCity(quezon_city);
-		magnum_talayan.setProvince(metro_manila);
-		customerRepo.save(magnum_talayan);
-
-		Customer magnum_edsa = new Customer("MAGNUM EDSA", CASHIER);
-		magnum_edsa.setStreet("48 HOWMART RD.");
-		magnum_edsa.setBarangay(apolonio_samson);
-		magnum_edsa.setCity(quezon_city);
-		magnum_edsa.setProvince(metro_manila);
-		customerRepo.save(magnum_edsa);
-
-		Customer marina = new Customer("MARINA SALES", VENDOR);
-		marina.setStreet("HOWMART RD.");
-		marina.setBarangay(apolonio_samson);
-		marina.setCity(quezon_city);
-		marina.setProvince(metro_manila);
-		marina.setPrimaryPricingType(purchase);
-		customerRepo.save(marina);
-
-		Customer sarisari = new Customer("SARI SARI", OUTLET);
-		sarisari.setStreet("123 DAANAN ST.");
-		sarisari.setBarangay(guadalupe_nuevo);
-		sarisari.setCity(makati);
-		sarisari.setProvince(metro_manila);
-		sarisari.setChannel(channelRepo.findOne(2L));
-		sarisari.setVisitFrequency(F2);
-		sarisari.setRouteHistory(asList(new Routing(s41, startDate())));
-		sarisari.setPrimaryPricingType(dealer);
-		customerRepo.save(sarisari);
-
-		Customer palengke = new Customer("TALIPAPA", OUTLET);
-		palengke.setStreet("456 TALIPAPAAN ST.");
-		palengke.setBarangay(apolonio_samson);
-		palengke.setCity(quezon_city);
-		palengke.setProvince(metro_manila);
-		palengke.setChannel(channelRepo.findOne(3L));
-		palengke.setVisitFrequency(F4);
-		palengke.setRouteHistory(asList(new Routing(pms1, startDate())));
-		palengke.setPrimaryPricingType(dealer);
-		customerRepo.save(palengke);
-
-		Customer variety = new Customer("VARIETY", OUTLET);
-		variety.setStreet("ROAD 789");
-		variety.setBarangay(guadalupe_viejo);
-		variety.setCity(makati);
-		variety.setProvince(metro_manila);
-		variety.setChannel(channelRepo.findOne(2L));
-		variety.setVisitFrequency(F2);
-		variety.setRouteHistory(asList(new Routing(s42, startDate())));
-		variety.setPrimaryPricingType(dealer);
-		variety.setDiscounts(discounts1level);
-		customerRepo.save(variety);
-
-		Customer wetStall = new Customer("WET MARKET STALL", OUTLET);
-		wetStall.setStreet("STALL 1, GALAS MARKET");
-		wetStall.setBarangay(san_isidro_galas);
-		wetStall.setCity(quezon_city);
-		wetStall.setProvince(metro_manila);
-		wetStall.setChannel(channelRepo.findOne(3L));
-		wetStall.setVisitFrequency(F4);
-		wetStall.setRouteHistory(asList(new Routing(pms2, startDate())));
-		wetStall.setPrimaryPricingType(dealer);
-		wetStall.setDiscounts(discounts2levels);
-		customerRepo.save(wetStall);
-
-		Customer dryStall = new Customer("DRY MARKET STALL", OUTLET);
-		dryStall.setStreet("STALL 2, GALAS MARKET");
-		dryStall.setBarangay(san_isidro_galas);
-		dryStall.setCity(quezon_city);
-		dryStall.setProvince(metro_manila);
-		dryStall.setChannel(channelRepo.findOne(4L));
-		dryStall.setVisitFrequency(F4);
-		dryStall.setRouteHistory(asList(new Routing(pms3, startDate())));
-		dryStall.setPrimaryPricingType(dealer);
-		customerRepo.save(dryStall);
-
-		pineSliceFlat = new Item("PINE SLCE FLT 227G", "DEL MONTE SLICED PINEAPPLE FLAT 227G X 24", PURCHASED);
-		pineSliceFlat.setFamily(pineSolid);
-		pineSliceFlat.setVendorId("364");
-		pineSliceFlat.setQtyPerUomList(pineSliceQtyPerUom());
-		pineSliceFlat.setPriceList(pineSliceFlatPrices());
-		pineSliceFlat.setVolumeDiscounts(pineSliceVolumeDiscounts());
-		pineSliceFlat = itemRepo.save(pineSliceFlat);
-
-		Item pineSlice15 = new Item("PINE SLCE 1.5 432G", "DEL MONTE SLICED PINEAPPLE 1 1/2 432G X 24", PURCHASED);
-		pineSlice15.setFamily(pineSolid);
-		pineSlice15.setVendorId("1596");
-		pineSlice15.setQtyPerUomList(pineSliceQtyPerUom());
-		pineSlice15.setPriceList(pineSlice15Prices());
-		pineSlice15.setVolumeDiscounts(pineSliceVolumeDiscounts());
-		pineSlice15 = itemRepo.save(pineSlice15);
-
-		BigDecimal pineSliceFlatPurchasePricePerPC = pineSliceFlat.getPriceList().stream()
-				.filter(p -> p.getStartDate().compareTo(newDate()) <= 0 && p.getType() == purchase)
-				.max(Price::compareTo).get().getPriceValue();
-		BigDecimal pineSliceFlatQtyPerCS = pineSliceFlat.getQtyPerUomList().stream().filter(q -> q.getUom() == CS)
-				.findFirst().get().getQty();
-		BigDecimal pineSlice15QtyPerCS = pineSlice15.getQtyPerUomList().stream().filter(q -> q.getUom() == UomType.CS)
-				.findFirst().get().getQty();
-
-		BigDecimal pineSlice15PurchasePricePerPC = pineSlice15PurchasePricingPerPC().getPriceValue();
-		BigDecimal pineSlice15PurchasePricePerCS = pineSlice15PurchasePricePerPC.multiply(pineSlice15QtyPerCS);
-		BigDecimal pineSliceFlatPurchasePricePerCS = pineSliceFlatPurchasePricePerPC.multiply(pineSliceFlatQtyPerCS);
-		pineSliceFlatListPricePerCS = pineSliceFlatListPricePerPC().getPriceValue().multiply(pineSliceFlatQtyPerCS);
-
-		Purchasing p_o = new Purchasing(marina, newDate());
-		SoldDetail pd = new SoldDetail(pineSliceFlat, CS, ONE, GOOD);
-		pd.setPriceValue(pineSliceFlatPurchasePricePerCS);
-		p_o.setDetails(asList(pd));
-		purchaseRepo.save(p_o);
-
-		BigDecimal pineSlice15ListPricePerPC = pineSlice15.getPriceList().stream()
-				.filter(p -> p.getStartDate().compareTo(newDate()) <= 0 && p.getType() == dealer).max(Price::compareTo)
-				.get().getPriceValue();
-
-		Booking sarisariBooking = new Booking(sarisari, newDate());
-		SoldDetail sarisariBookingDetail = new SoldDetail(pineSliceFlat, PC, TEN, GOOD);
-		sarisariBookingDetail.setPriceValue(pineSliceFlatListPricePerPC().getPriceValue());
-
-		sarisariBooking.setDetails(asList(sarisariBookingDetail));
-		bookingRepo.save(sarisariBooking);
-
-		Booking palengkeBooking = new Booking(palengke, newDate());
-
-		SoldDetail palengkeBookingDetail1 = new SoldDetail(pineSliceFlat, CS, ONE, GOOD);
-		palengkeBookingDetail1.setPriceValue(pineSliceFlatListPricePerCS);
-		BigDecimal palengkeDetail2Qty = TWO;
-		SoldDetail palengkeBookingDetail2 = new SoldDetail(pineSliceFlat, CS, palengkeDetail2Qty, GOOD);
-		palengkeBookingDetail2.setPriceValue(pineSliceFlatListPricePerCS);
-		BigDecimal palengkeDetail3Qty = new BigDecimal(12);
-		SoldDetail palengkeBookingDetail3 = new SoldDetail(pineSlice15, PC, palengkeDetail3Qty, GOOD);
-		palengkeBookingDetail3.setPriceValue(pineSlice15ListPricePerPC);
-		palengkeBooking.setDetails(asList(palengkeBookingDetail1, palengkeBookingDetail2, palengkeBookingDetail3));
-		bookingRepo.save(palengkeBooking);
-
-		Booking varietyBooking = new Booking(variety, newDate());
-		SoldDetail varietyBookingDetail = new SoldDetail(pineSliceFlat, PC, TWENTY, GOOD);
-		varietyBookingDetail.setPriceValue(pineSliceFlatListPricePerPC().getPriceValue());
-		varietyBooking.setDetails(asList(varietyBookingDetail));
-		varietyBooking.setDiscounts(variety.getDiscounts());
-		bookingRepo.save(varietyBooking);
-
-		Booking wetStallBooking = new Booking(wetStall, newDate());
-		wetStallBooking.setDetails(wetStallBookingDetails());
-		wetStallBooking.setDiscounts(wetStall.getDiscounts());
-		bookingRepo.save(wetStallBooking);
-
-		Booking dryStallBooking = new Booking(dryStall, newDate());
-		dryStallBooking.setDetails(dryStallBookingDetails());
-		bookingRepo.save(dryStallBooking);
-
-		// TODO
-		PickList wsnPick = new PickList(wsn519, larry, mark, newDate());
-		wsnPick.setBookings(asList(varietyBooking));
-		pickRepo.save(wsnPick);
-
-		PickList kdlPick = new PickList(kdl170, vicente, tata, newDate());
-		kdlPick.setBookings(asList(palengkeBooking, wetStallBooking, dryStallBooking));
-		pickRepo.save(kdlPick);
-
-		InvoiceBooklet ib1 = new InvoiceBooklet();
-		ib1.setStartId(1L);
-		ib1.setEndId(50L);
-		ib1.setIssuedTo(dsp1);
-		bookletRepo.save(ib1);
-
-		InvoiceBooklet ib2 = new InvoiceBooklet();
-		ib2.setStartId(51L);
-		ib2.setEndId(100L);
-		ib2.setIssuedTo(dsp2);
-		bookletRepo.save(ib2);
-
-		Invoice varietyInvoice = new Invoice();
-		varietyInvoice.setId(1L);
-		varietyInvoice.setNumId(1L);
-		varietyInvoice.setCustomer(varietyBooking.getCustomer());
-		varietyInvoice.setBooking(varietyBooking);
-		varietyInvoice.setOrderDate(newDate());
-		varietyInvoice.setDiscounts(varietyBooking.getDiscounts());
-		varietyInvoice.setDetails(varietyBooking.getDetails());
-		varietyInvoice = invoiceRepo.save(varietyInvoice);
-
-		Invoice wetStallInvoice = new Invoice();
-		wetStallInvoice.setId(2L);
-		wetStallInvoice.setNumId(1L);
-		wetStallInvoice.setSuffix("A");
-		wetStallInvoice.setCustomer(wetStallBooking.getCustomer());
-		wetStallInvoice.setBooking(wetStallBooking);
-		wetStallInvoice.setOrderDate(newDate());
-		wetStallInvoice.setDiscounts(wetStallBooking.getDiscounts());
-		wetStallInvoice.setDetails(wetStallBooking.getDetails());
-		wetStallInvoice = invoiceRepo.save(wetStallInvoice);
-
-		Invoice dryStallInvoice = new Invoice();
-		dryStallInvoice.setId(3L);
-		dryStallInvoice.setPrefix("SMB");
-		dryStallInvoice.setNumId(1L);
-		dryStallInvoice.setSuffix("A");
-		dryStallInvoice.setCustomer(dryStallBooking.getCustomer());
-		dryStallInvoice.setBooking(dryStallBooking);
-		dryStallInvoice.setOrderDate(newDate());
-		dryStallInvoice.setDiscounts(dryStallBooking.getDiscounts());
-		dryStallInvoice.setDetails(dryStallBooking.getDetails());
-		dryStallInvoice = invoiceRepo.save(dryStallInvoice);
-
-		dryStallBooking.setDetails(dryStallBookingDetails());
-		dryStallBooking.setId(6L);
-		dryStallBooking = bookingRepo.save(dryStallBooking);
-		Invoice dryStallInvoice1 = new Invoice();
-		dryStallInvoice1.setId(4L);
-		dryStallInvoice1.setPrefix("GSM");
-		dryStallInvoice1.setNumId(1L);
-		dryStallInvoice1.setCustomer(dryStallBooking.getCustomer());
-		dryStallInvoice1.setBooking(dryStallBooking);
-		dryStallInvoice1.setOrderDate(newDate().minusDays(1L));
-		dryStallInvoice1.setDiscounts(dryStallBooking.getDiscounts());
-		dryStallInvoice1.setDetails(dryStallBooking.getDetails());
-		dryStallInvoice1 = invoiceRepo.save(dryStallInvoice1);
-
-		dryStallBooking.setDetails(dryStallBookingDetails());
-		dryStallBooking.setId(7L);
-		dryStallBooking = bookingRepo.save(dryStallBooking);
-		Invoice dryStallInvoice8 = new Invoice();
-		dryStallInvoice8.setId(5L);
-		dryStallInvoice8.setPrefix("PF");
-		dryStallInvoice8.setNumId(1L);
-		dryStallInvoice8.setCustomer(dryStallBooking.getCustomer());
-		dryStallInvoice8.setBooking(dryStallBooking);
-		dryStallInvoice8.setOrderDate(newDate().minusDays(8L));
-		dryStallInvoice8.setDiscounts(dryStallBooking.getDiscounts());
-		dryStallInvoice8.setDetails(dryStallBooking.getDetails());
-		dryStallInvoice8 = invoiceRepo.save(dryStallInvoice8);
-
-		dryStallBooking.setDetails(dryStallBookingDetails());
-		dryStallBooking.setId(8L);
-		dryStallBooking = bookingRepo.save(dryStallBooking);
-		Invoice dryStallInvoice16 = new Invoice();
-		dryStallInvoice16.setId(6L);
-		dryStallInvoice16.setNumId(1L);
-		dryStallInvoice16.setSuffix("B");
-		dryStallInvoice16.setCustomer(dryStallBooking.getCustomer());
-		dryStallInvoice16.setBooking(dryStallBooking);
-		dryStallInvoice16.setOrderDate(newDate().minusDays(16L));
-		dryStallInvoice16.setDiscounts(dryStallBooking.getDiscounts());
-		dryStallInvoice16.setDetails(dryStallBooking.getDetails());
-		dryStallInvoice16 = invoiceRepo.save(dryStallInvoice16);
-
-		dryStallBooking.setDetails(dryStallBookingDetails());
-		dryStallBooking.setId(9L);
-		dryStallBooking = bookingRepo.save(dryStallBooking);
-		Invoice dryStallInvoice31 = new Invoice();
-		dryStallInvoice31.setId(7L);
-		dryStallInvoice31.setPrefix("SMB");
-		dryStallInvoice31.setNumId(1L);
-		dryStallInvoice31.setSuffix("B");
-		dryStallInvoice31.setCustomer(dryStallBooking.getCustomer());
-		dryStallInvoice31.setBooking(dryStallBooking);
-		dryStallInvoice31.setOrderDate(newDate().minusDays(31L));
-		dryStallInvoice31.setDiscounts(dryStallBooking.getDiscounts());
-		dryStallInvoice31.setDetails(dryStallBooking.getDetails());
-		dryStallInvoice31 = invoiceRepo.save(dryStallInvoice31);
-
-		wetStallBooking.setDetails(wetStallBookingDetails());
-		wetStallBooking.setId(10L);
-		wetStallBooking = bookingRepo.save(wetStallBooking);
-		Invoice wetStallInvoice31 = new Invoice();
-		wetStallInvoice31.setId(8L);
-		wetStallInvoice31.setPrefix("GSM");
-		wetStallInvoice31.setNumId(1L);
-		wetStallInvoice31.setSuffix("B");
-		wetStallInvoice31.setCustomer(wetStallBooking.getCustomer());
-		wetStallInvoice31.setBooking(wetStallBooking);
-		wetStallInvoice31.setOrderDate(newDate().minusDays(31L));
-		wetStallInvoice31.setDiscounts(wetStallBooking.getDiscounts());
-		wetStallInvoice31.setDetails(wetStallBooking.getDetails());
-		wetStallInvoice31 = invoiceRepo.save(wetStallInvoice31);
-
-		BigDecimal rdmRemitValue = new BigDecimal(469.60);
-		Remittance rdmRemit = new Remittance(newDate(), larry.getUsername(), magnum_edsa.getName(), null,
-				rdmRemitValue);
-		rdmRemit = remittanceRepo.save(rdmRemit);
-		rdmRemit.setDetails(asList(new RemittanceDetail(rdmRemit, varietyInvoice, rdmRemitValue)));
-		rdmRemit = remittanceRepo.save(rdmRemit);
-		varietyInvoice.setFullyPaid(varietyInvoice.getUnpaidValue().subtract(rdmRemitValue).compareTo(ONE) <= 0);
-		varietyInvoice = invoiceRepo.save(varietyInvoice);
-
-		BigDecimal kdlRemitValue = new BigDecimal(117.40);
-		Remittance kdlRemit = new Remittance(newDate(), vicente.getUsername(), magnum_edsa.getName(), null,
-				kdlRemitValue);
-		kdlRemit = remittanceRepo.save(kdlRemit);
-		kdlRemit.setDetails(asList(new RemittanceDetail(kdlRemit, wetStallInvoice, kdlRemitValue)));
-		kdlRemit = remittanceRepo.save(kdlRemit);
-		wetStallInvoice.setFullyPaid(wetStallInvoice.getUnpaidValue().subtract(kdlRemitValue).compareTo(ONE) <= 0);
-		wetStallInvoice = invoiceRepo.save(wetStallInvoice);
-
-		Receiving marinaReceipt = new Receiving(marina, 1L, sysgen, newDate());
-		SoldDetail marinaPineSliceFlatReceiptDetail = new SoldDetail(pineSliceFlat, CS, TEN, GOOD);
-		marinaPineSliceFlatReceiptDetail.setPriceValue(pineSliceFlatPurchasePricePerCS);
-		SoldDetail marinaPineSlice15ReceiptDetail = new SoldDetail(pineSlice15, CS, TEN, GOOD);
-		marinaPineSlice15ReceiptDetail.setPriceValue(pineSlice15PurchasePricePerCS);
-		marinaReceipt.setDetails(asList(marinaPineSliceFlatReceiptDetail, marinaPineSlice15ReceiptDetail));
-		marinaReceipt = receiptRepo.save(marinaReceipt);
-
-		stockTakeReconciliationRepo.save(new StockTakeReconciliation(sysgen, newDate()));
-
-		StockTake st1 = stockTakeRepo.save(new StockTake(edsa, sysgen, sysgen, newDate()));
-		StockTakeDetail std1 = new StockTakeDetail(pineSliceFlat, CS, ONE, GOOD);
-		StockTakeDetail std2 = new StockTakeDetail(pineSliceFlat, PC, TEN, BAD);
-		StockTakeDetail std3 = new StockTakeDetail(pineSlice15, PC, new BigDecimal(5), BAD);
-		st1.setDetails(asList(std1, std2, std3));
-		st1 = stockTakeRepo.save(st1);
-
-		StockTake st2 = stockTakeRepo.save(new StockTake(edsa, sysgen, sysgen, newDate()));
-		StockTakeDetail std4 = new StockTakeDetail(pineSlice15, PC, new BigDecimal(5), GOOD);
-		st2.setDetails(asList(std4));
-		st2 = stockTakeRepo.save(st2);
-	}
-
-	private LocalDate startDate() {
-		return LocalDate.parse("2014-07-28");
-	}
-
-	private List<SoldDetail> wetStallBookingDetails() {
-		SoldDetail wetStallBookingDetail = new SoldDetail(pineSliceFlat, PC, FIVE, GOOD);
-		wetStallBookingDetail.setPriceValue(pineSliceFlatListPricePerPC().getPriceValue());
-		return asList(wetStallBookingDetail);
 	}
 }

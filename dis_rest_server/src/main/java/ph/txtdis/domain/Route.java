@@ -30,8 +30,16 @@ public class Route extends AbstractName {
 	}
 
 	public String getSeller(LocalDate date) {
-		return getSellerHistory() == null ? null
-				: getSellerHistory().stream().filter(p -> p.getStartDate().compareTo(date) <= 0).max(Account::compareTo)
-						.get().getSeller();
+		try {
+			return getSellerHistory().stream().filter(p -> p.getStartDate().compareTo(date) <= 0)
+					.max((a, b) -> a.getStartDate().compareTo(b.getStartDate())).get().getSeller();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 }

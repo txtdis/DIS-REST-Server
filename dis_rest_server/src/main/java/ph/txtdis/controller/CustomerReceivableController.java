@@ -1,12 +1,15 @@
 package ph.txtdis.controller;
 
+import static java.time.LocalDate.now;
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.text.WordUtils.capitalizeFully;
+
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,18 +18,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import static java.math.BigDecimal.ONE;
+
+import ph.txtdis.domain.Billing;
 import ph.txtdis.domain.Customer;
-import ph.txtdis.domain.Invoice;
 import ph.txtdis.dto.CustomerReceivable;
 import ph.txtdis.dto.CustomerReceivableReport;
-import ph.txtdis.repository.InvoiceRepository;
+import ph.txtdis.repository.BillingRepository;
 
 @RestController("customerReceivableController")
 @RequestMapping("/customerReceivables")
-public class CustomerReceivableController extends ReceivableController {
+public class CustomerReceivableController {
 
 	@Autowired
-	private InvoiceRepository repository;
+	private BillingRepository repository;
 
 	private List<CustomerReceivable> receivables;
 
@@ -37,9 +42,7 @@ public class CustomerReceivableController extends ReceivableController {
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<?> customerReceivableReport(@RequestParam("customer") Customer c,
 			@RequestParam("lowerDayCount") long low, @RequestParam("upperDayCount") long up) {
-		extractDataFromInvoices(c, low, up);
-		CustomerReceivableReport r = new CustomerReceivableReport(receivables, totals, customerName,
-				ZonedDateTime.now());
+		CustomerReceivableReport r = extractDataFromInvoices(c, low, up);
 		return new ResponseEntity<>(r == null ? null : r, HttpStatus.OK);
 	}
 
@@ -53,25 +56,31 @@ public class CustomerReceivableController extends ReceivableController {
 		});
 	}
 
-	private void extractDataFromInvoices(Customer c, long low, long up) {
-		List<Invoice> list = repository.findByCustomerAndFullyPaidOrderByOrderDateDesc(c, false);
+	private long daysOver(Billing i) {
+		return i.getDueDate().until(now(), DAYS);
+	}
+
+	private CustomerReceivableReport extractDataFromInvoices(Customer c, long low, long up) {
+		List<Billing> list = repository.findByFullyPaidFalseAndCustomerAndUnpaidValueGreaterThanOrderByOrderDateDesc(c,
+				ONE);
 		if (list != null)
 			setData(low, up, list);
+		return new CustomerReceivableReport(receivables, totals, customerName, ZonedDateTime.now());
 	}
 
-	private void generateReceivableList(long low, long up, List<Invoice> list) {
+	private void generateReceivableList(long low, long up, List<Billing> list) {
 		receivables = list.stream().filter(i -> daysOver(i) >= low && daysOver(i) <= up)
-				.map(i -> new CustomerReceivable(i)).collect(Collectors.toList());
+				.map(i -> new CustomerReceivable(i)).collect(toList());
 	}
 
-	private void setCustomer(List<Invoice> list) {
+	private void setCustomer(List<Billing> list) {
 		if (list.isEmpty())
 			return;
 		String n = list.get(0).getCustomer().getName();
-		customerName = WordUtils.capitalizeFully(n);
+		customerName = capitalizeFully(n);
 	}
 
-	private void setData(long low, long up, List<Invoice> list) {
+	private void setData(long low, long up, List<Billing> list) {
 		generateReceivableList(low, up, list);
 		setCustomer(list);
 		computeTotals(receivables);

@@ -1,6 +1,7 @@
 package ph.txtdis.domain;
 
-import java.time.LocalDate;
+import static java.time.LocalDate.now;
+
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -12,6 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -22,7 +25,7 @@ import ph.txtdis.type.VisitFrequency;
 @Entity
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Table(indexes = { @Index(columnList = "name") })
+@Table(indexes = { @Index(columnList = "name"), @Index(columnList = "deactivated_on, type") })
 public class Customer extends AbstractDeactivatedName {
 
 	private static final long serialVersionUID = -878749889584633340L;
@@ -85,20 +88,48 @@ public class Customer extends AbstractDeactivatedName {
 		this.type = type;
 	}
 
-	public CreditDetail getCredit(LocalDate date) {
-		return getCreditDetails() == null ? null
-				: getCreditDetails().stream().filter(p -> p.getStartDate().compareTo(date) <= 0)
-						.max((a, b) -> a.getStartDate().compareTo(b.getStartDate())).get();
+	@JsonIgnore
+	public String getAddress() {
+		return street() + barangay() + city() + province();
 	}
 
-	public Route getRoute(LocalDate date) {
-		return getRouteHistory() == null ? null
-				: getRouteHistory().stream().filter(p -> p.getStartDate().compareTo(date) <= 0)
-						.max((a, b) -> a.getStartDate().compareTo(b.getStartDate())).get().getRoute();
+	@JsonIgnore
+	public String getSeller() {
+		try {
+			return getRoute().getSeller(now());
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
-	public String getSeller(LocalDate date) {
-		Route r = getRoute(date);
-		return r == null ? null : r.getSeller(date);
+	private String barangay() {
+		if (barangay == null)
+			return "";
+		return (street != null ? ", " : "") + barangay;
+	}
+
+	private String city() {
+		if (city == null)
+			return "";
+		return (barangay != null || street != null ? ", " : "") + city;
+	}
+
+	private Route getRoute() {
+		try {
+			return getRouteHistory().stream().filter(p -> !p.getStartDate().isAfter(now()))
+					.max((a, b) -> a.getStartDate().compareTo(b.getStartDate())).get().getRoute();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	private String province() {
+		if (province == null)
+			return "";
+		return (city != null || barangay != null || street != null ? ", " : "") + province;
+	}
+
+	private String street() {
+		return street == null ? "" : street;
 	}
 }

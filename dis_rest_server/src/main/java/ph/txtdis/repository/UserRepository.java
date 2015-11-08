@@ -14,10 +14,7 @@ public interface UserRepository extends CrudRepository<User, String> {
 
 	User findByEmail(@Param("email") String email);
 
-	// @Query("select u from User u join u.roles r where u.enabled = true and
-	// r.authority = :role "
-	// + "order by u.username asc")
-	List<User> findByEnabledTrueAndRolesAuthorityOrderByUsernameAsc(@Param("role") UserType role);
+	List<User> findByEnabledTrueAndRolesAuthorityInOrderByUsernameAsc(@Param("roles") List<UserType> roles);
 
 	List<User> findByEnabledTrueOrderByUsernameAsc();
 }

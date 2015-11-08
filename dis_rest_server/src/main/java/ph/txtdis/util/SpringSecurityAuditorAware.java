@@ -8,8 +8,8 @@ public class SpringSecurityAuditorAware implements AuditorAware<String> {
 
 	@Override
 	public String getCurrentAuditor() {
-		if (!Spring.isAuthenticated())
+		if (!SpringUtils.isAuthenticated())
 			return "SYSGEN";
-		return Spring.username();
+		return SpringUtils.username();
 	}
 }

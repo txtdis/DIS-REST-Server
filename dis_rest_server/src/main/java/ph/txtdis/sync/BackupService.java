@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import ph.txtdis.exception.FailedBackupException;
-import ph.txtdis.util.Binary;
+import ph.txtdis.util.BinaryUtils;
 
 @Service("backupService")
 public class BackupService {
@@ -46,7 +46,7 @@ public class BackupService {
 	public byte[] getBackupBytes() throws FailedBackupException {
 		try {
 			backup();
-			return Binary.toBytes(backup);
+			return BinaryUtils.toBytes(backup);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new FailedBackupException();

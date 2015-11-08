@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Default Connection</comment>
+<entry key="last_connected">1445893540229</entry>
+<entry key="restore_state">true</entry>
+<entry key="displayName">Old Local SMIS Database</entry>
+<entry key="sshEnabled">false</entry>
+<entry key="useCustomConnectionString">false</entry>
+<entry key="forceRestore">true</entry>
+<entry key="port">5432</entry>
+<entry key="userName">postgres</entry>
+<entry key="last_java_project">/dis_rest_server</entry>
+<entry key="performance">2</entry>
+<entry key="autoCommit">true</entry>
+<entry key="host">localhost</entry>
+<entry key="sshPassword">+z1oHOlqnPs=</entry>
+<entry key="color">123 123 123</entry>
+<entry key="sslEnabled">false</entry>
+<entry key="uuid">f57ed6cc-6cc6-4cb3-9244-4adab8e0ccbd</entry>
+<entry key="db">mgdc_smis</entry>
+<entry key="adapterId">POSTGRESQL</entry>
+<entry key="customJdbcConnectString">jdbc:postgresql://localhost:5432/mgdc_smis</entry>
+</properties>

@@ -19,8 +19,8 @@ public class JpaAuthenticationManager implements AuthenticationManager {
 	@Override
 	public Authentication authenticate(Authentication auth) throws AuthenticationException {
 		User user = userRepository.findOne(auth.getName());
-		if (user != null && Spring.matchPasswords(auth, user))
-			return Spring.authorize(user, auth, Spring.toGranted(user.getRoles()));
+		if (user != null && SpringUtils.matchPasswords(auth, user))
+			return SpringUtils.authorize(user, auth, SpringUtils.toGranted(user.getRoles()));
 		throw new BadCredentialsException("Incorrect Username and/or Password");
 	}
 }

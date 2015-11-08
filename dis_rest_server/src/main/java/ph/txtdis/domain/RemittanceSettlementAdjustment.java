@@ -30,7 +30,7 @@ public class RemittanceSettlementAdjustment extends TrackedOrder {
 	private Truck truck;
 
 	@ManyToOne(optional = false)
-	private Invoice invoice;
+	private Billing invoice;
 
 	@Column(name = "action_taken", nullable = false)
 	private String actionTaken;

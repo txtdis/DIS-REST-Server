@@ -6,12 +6,12 @@ import java.util.List;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import ph.txtdis.domain.PickList;
+import ph.txtdis.domain.Picking;
 
 @Repository("pickingRepository")
-public interface PickListRepository extends SpunRepository<PickList, Long> {
+public interface PickListRepository extends SpunRepository<Picking, Long> {
 
-	PickList findByBookingsId(@Param("bookingId") Long id);
+	Picking findByBookingsBookingId(@Param("bookingId") Long id);
 
-	List<PickList> findByPickDate(LocalDate date);
+	List<Picking> findByPickDate(LocalDate date);
 }

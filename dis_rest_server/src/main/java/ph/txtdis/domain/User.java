@@ -45,6 +45,10 @@ public class User implements Serializable, Keyed<String> {
 
 	private String email;
 
+	public User(String username) {
+		this.username = username;
+	}
+
 	public User(String username, String password, List<Authority> roles) {
 		this.username = username;
 		this.password = password;

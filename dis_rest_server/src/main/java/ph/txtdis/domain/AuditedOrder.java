@@ -2,6 +2,7 @@ package ph.txtdis.domain;
 
 import java.time.ZonedDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 import lombok.AccessLevel;
@@ -17,15 +18,12 @@ public abstract class AuditedOrder extends TrackedOrder {
 
 	private static final long serialVersionUID = 8939708088215882688L;
 
-	protected String revisedBy;
+	@Column(name = "is_valid")
+	private Boolean isValid;
 
-	protected ZonedDateTime revisedOn;
+	@Column(name = "audited_by")
+	private String auditedBy;
 
-	protected String invalidatedBy;
-
-	protected ZonedDateTime invalidatedOn;
-
-	protected String validatedBy;
-
-	protected ZonedDateTime validatedOn;
+	@Column(name = "audited_on")
+	private ZonedDateTime auditedOn;
 }

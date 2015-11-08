@@ -6,8 +6,7 @@ import java.time.temporal.ChronoUnit;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ph.txtdis.domain.CreditDetail;
-import ph.txtdis.domain.Invoice;
+import ph.txtdis.domain.Billing;
 
 @Data
 @NoArgsConstructor
@@ -27,18 +26,13 @@ public class CustomerReceivable {
 
 	private BigDecimal totalValue;
 
-	public CustomerReceivable(Invoice i) {
+	public CustomerReceivable(Billing i) {
 		id = i.getId();
 		orderNo = i.getOrderNo();
 		orderDate = i.getOrderDate();
-		dueDate = orderDate.plusDays(getTermsInDays(i));
+		dueDate = i.getDueDate();
 		daysOverCount = dueDate.until(LocalDate.now(), ChronoUnit.DAYS);
 		unpaidValue = i.getUnpaidValue();
-		totalValue = i.getValue();
-	}
-
-	private int getTermsInDays(Invoice i) {
-		CreditDetail c = i.getCredit();
-		return c == null ? 0 : c.getTermInDays() + c.getGracePeriodInDays();
+		totalValue = i.getTotalValue();
 	}
 }

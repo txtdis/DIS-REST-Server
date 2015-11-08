@@ -8,27 +8,22 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@AllArgsConstructor
 @Table(name = "remittance_detail")
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RemittanceDetail extends TrackedOrder {
+public class RemittanceDetail extends AbstractId {
 
 	private static final long serialVersionUID = -968954060788678059L;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	private Remittance remittance;
 
-	@ManyToOne(cascade = CascadeType.ALL)
-	private Invoice invoice;
+	@ManyToOne(optional = false, cascade = CascadeType.ALL)
+	private Billing billing;
 
 	@Column(name = "payment", nullable = false, precision = 8, scale = 2)
 	private BigDecimal paymentValue;
