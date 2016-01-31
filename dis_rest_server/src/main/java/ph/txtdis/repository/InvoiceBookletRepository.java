@@ -13,11 +13,9 @@ public interface InvoiceBookletRepository extends CrudRepository<InvoiceBooklet,
 
 	List<InvoiceBooklet> findByOrderByPrefixAscStartIdAscSuffixAsc();
 
-	InvoiceBooklet findByPrefixAndSuffixAndStartIdLessThanEqualAndEndIdGreaterThanEqual(
-	// @formatter:off
-		@Param("prefix") String idPrefix,
-		@Param("suffix") String idSuffix,
-		@Param("firstId") Long firstId,
-		@Param("lastId") Long lastId);
-	// @formatter:on
+	InvoiceBooklet findByPrefixAndSuffixAndStartIdLessThanEqualAndEndIdGreaterThanEqual(//
+			@Param("prefix") String p, //
+			@Param("suffix") String s, //
+			@Param("firstId") Long f, //
+			@Param("lastId") Long l);//
 }

@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,7 +26,7 @@ public class UserController extends IdController<UserRepository, User, String> {
 		return new ResponseEntity<>(u, OK);
 	}
 
-	@RequestMapping(method = RequestMethod.GET)
+	@RequestMapping(method = GET)
 	public ResponseEntity<?> list() {
 		List<User> u = repository.findByEnabledTrueOrderByUsernameAsc();
 		return new ResponseEntity<>(u, OK);
@@ -37,7 +36,13 @@ public class UserController extends IdController<UserRepository, User, String> {
 	public ResponseEntity<?> listNamesByRole(@RequestParam("name") UserType[] types) {
 		List<UserType> roles = Arrays.asList(types);
 		List<User> users = repository.findByEnabledTrueAndRolesAuthorityInOrderByUsernameAsc(roles);
-		users = users.stream().map(u -> new User(u.getUsername())).collect(toList());
+		users = users.stream().map(u -> nameOnlyUser(u)).collect(toList());
 		return new ResponseEntity<>(users, OK);
+	}
+
+	private User nameOnlyUser(User u) {
+		User user = new User();
+		user.setUsername(u.getUsername());
+		return user;
 	}
 }

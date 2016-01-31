@@ -3,16 +3,13 @@ package ph.txtdis.domain;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Style extends AbstractId {
+public class Style extends AbstractId<Long> {
 
 	private static final long serialVersionUID = -4479575580426911105L;
 

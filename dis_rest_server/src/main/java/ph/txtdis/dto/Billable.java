@@ -6,52 +6,29 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import ph.txtdis.domain.Billing;
 import ph.txtdis.domain.Keyed;
 
 @Data
-@NoArgsConstructor
 public class Billable implements Keyed<Long> {
 
-	private Boolean isValid;
+	private boolean isPicked;
 
-	private BigDecimal actualValue, grossValue, totalValue, unpaidValue;
+	private Boolean isRma, isValid;
+
+	private BigDecimal badOrderAllowanceValue, grossValue, totalValue, unpaidValue;
 
 	private List<BillableDetail> details;
 
-	private List<Long> discountIds, detailIds;
+	private List<Long> discountIds;
 
 	private List<String> discounts, payments;
 
 	private LocalDate dueDate, orderDate;
 
-	private Long id, numId, bookingId, customerId;
+	private Long id, numId, bookingId, customerId, receivingId;
 
-	private String prefix, suffix, customerName, customerAddress, remarks, createdBy, auditedBy;
+	private String prefix, suffix, customerName, customerAddress, customerLocation, remarks, route, auditedBy, billedBy,
+			createdBy, printedBy, receivedBy, receivingModifiedBy, truck;
 
-	private ZonedDateTime createdOn, auditedOn;
-
-	public Billable(Billing b) {
-		id = b.getId();
-		numId = b.getNumId();
-		bookingId = b.getBookingId();
-		customerId = b.getCustomer().getId();
-		prefix = b.getPrefix();
-		suffix = b.getSuffix();
-		customerName = b.getCustomer().getName();
-		customerAddress = b.getCustomer().getAddress();
-		remarks = b.getRemarks();
-		createdBy = b.getCreatedBy();
-		auditedBy = b.getAuditedBy();
-		dueDate = b.getDueDate();
-		orderDate = b.getOrderDate();
-		actualValue = b.getActualValue();
-		grossValue = b.getGrossValue();
-		totalValue = b.getTotalValue();
-		unpaidValue = b.getUnpaidValue();
-		createdOn = b.getCreatedOn();
-		auditedOn = b.getAuditedOn();
-		isValid = b.getIsValid();
-	}
+	private ZonedDateTime auditedOn, billedOn, createdOn, printedOn, receivedOn, receivingModifiedOn;
 }

@@ -15,9 +15,7 @@ public class PickList extends AbstractTrackedId<Long> {
 
 	private LocalDate pickDate;
 
-	private List<Billable> bookings;
+	private List<Booking> bookings;
 
 	private ZonedDateTime printedOn;
-
-	private Boolean printedAll;
 }

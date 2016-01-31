@@ -8,26 +8,22 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import ph.txtdis.type.DeliveryType;
 
 @Data
 @Entity
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Route extends AbstractName {
+public class Route extends Named<Long> {
 
 	private static final long serialVersionUID = -593813397375404049L;
+
+	private DeliveryType type;
 
 	@JoinColumn(name = "route_id")
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<Account> sellerHistory;
-
-	public Route(String name) {
-		super(name);
-	}
 
 	public String getSeller(LocalDate date) {
 		try {

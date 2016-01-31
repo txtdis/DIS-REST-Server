@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface Discounted {
 
-	List<Discount> getDiscounts();
+	List<CustomerDiscount> getCustomerDiscounts();
 }

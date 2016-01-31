@@ -1,14 +1,19 @@
 package ph.txtdis.util;
 
+import static com.google.i18n.phonenumbers.PhoneNumberUtil.getInstance;
+import static com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat.E164;
+import static com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberType.MOBILE;
+import static java.math.RoundingMode.HALF_EVEN;
+
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
-import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberType;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
+
+import static java.math.BigDecimal.ZERO;
 
 public class NumberUtils {
 
@@ -27,8 +32,8 @@ public class NumberUtils {
 
 	public static BigDecimal divide(BigDecimal dividend, BigDecimal divisor) {
 		if (dividend == null || isZero(divisor))
-			return BigDecimal.ZERO;
-		return dividend.divide(divisor, 4, RoundingMode.HALF_EVEN);
+			return ZERO;
+		return dividend.divide(divisor, 4, HALF_EVEN);
 	}
 
 	public static String format2Place(BigDecimal number) {
@@ -55,20 +60,16 @@ public class NumberUtils {
 		return number == null || !isPhone(number) ? "" : phoneUtil().formatNumberForMobileDialing(number, "PH", true);
 	}
 
-	public static String formatPrint(BigDecimal number) {
-		return NO_COMMA_DECIMAL.format(number);
-	}
-
 	public static String formatQuantity(BigDecimal number) {
 		return isZero(number) ? "" : INTEGER.format(number);
 	}
 
 	public static boolean isMobile(PhoneNumber phone) {
-		return !isPhone(phone) ? false : phoneUtil().getNumberType(phone) == PhoneNumberType.MOBILE;
+		return !isPhone(phone) ? false : phoneUtil().getNumberType(phone) == MOBILE;
 	}
 
 	public static boolean isNegative(BigDecimal number) {
-		return number == null ? false : number.compareTo(BigDecimal.ZERO) < 0;
+		return number == null ? false : number.compareTo(ZERO) < 0;
 	}
 
 	public static boolean isNegative(Integer number) {
@@ -92,11 +93,11 @@ public class NumberUtils {
 	}
 
 	public static boolean isPositive(BigDecimal number) {
-		return number == null ? false : number.compareTo(BigDecimal.ZERO) > 0;
+		return number == null ? false : number.compareTo(ZERO) > 0;
 	}
 
 	public static boolean isZero(BigDecimal number) {
-		return number == null ? true : number.compareTo(BigDecimal.ZERO) == 0;
+		return number == null ? true : number.compareTo(ZERO) == 0;
 	}
 
 	public static boolean isZero(Integer number) {
@@ -108,18 +109,16 @@ public class NumberUtils {
 	}
 
 	public static BigDecimal parseBigDecimal(String text) {
-		// @formatter:off
-        if (text == null)
-            return BigDecimal.ZERO;
-        text = text.trim()
-            .replace(",", "")
-            .replace("(", "-")
-            .replace(")","")
-            .replace("₱", "");
-        if (text.equals("-") || text.isEmpty())
-            return BigDecimal.ZERO;
-        return new BigDecimal(text);
-        // @formatter:on
+		if (text == null)
+			return ZERO;
+		text = text.trim()//
+				.replace(",", "")//
+				.replace("(", "-")//
+				.replace(")", "")//
+				.replace("₱", "");
+		if (text.equals("-") || text.isEmpty())
+			return ZERO;
+		return new BigDecimal(text);
 	}
 
 	public static double parseDouble(String text) {
@@ -145,14 +144,22 @@ public class NumberUtils {
 
 	public static String persistPhone(String number) {
 		PhoneNumber phone = parsePhone(number);
-		return phone == null ? "" : phoneUtil().format(phone, PhoneNumberFormat.E164);
+		return phone == null ? "" : phoneUtil().format(phone, E164);
+	}
+
+	public static String printDecimal(BigDecimal number) {
+		return NO_COMMA_DECIMAL.format(number);
+	}
+
+	public static String printInteger(BigDecimal number) {
+		return NO_COMMA_INTEGER.format(number);
 	}
 
 	public static BigDecimal toPercentRate(BigDecimal percent) {
-		return percent == null ? BigDecimal.ZERO : divide(percent, NumberUtils.HUNDRED);
+		return percent == null ? ZERO : divide(percent, HUNDRED);
 	}
 
 	private static PhoneNumberUtil phoneUtil() {
-		return PhoneNumberUtil.getInstance();
+		return getInstance();
 	}
 }

@@ -6,31 +6,34 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import ph.txtdis.printer.Printed;
 
 @Data
 @Entity
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Picking extends TrackedOrder implements Printed {
+@Table(indexes = { //
+		@Index(columnList = "pick_date"), //
+		@Index(columnList = "printed_on") })
+public class Picking extends CreationTracked<Long> implements Printed {
 
 	private static final long serialVersionUID = -3835242947594550479L;
 
-	@ManyToOne(optional = false)
+	@ManyToOne
 	private Truck truck;
 
-	@ManyToOne(optional = false)
+	@ManyToOne
+	@JoinColumn(name = "driver")
 	private User driver;
 
-	@ManyToOne(optional = false)
+	@ManyToOne
 	@JoinColumn(name = "lead_helper")
 	private User leadHelper;
 
@@ -44,22 +47,12 @@ public class Picking extends TrackedOrder implements Printed {
 	private String remarks;
 
 	@OneToMany
-	@JoinColumn(name = "pick_list_id")
-	private List<Billing> bookings;
+	@JoinColumn(name = "picking_id")
+	private List<Billing> billings;
 
 	@Column(name = "printed_by")
 	private String printedBy;
 
 	@Column(name = "printed_on")
 	private ZonedDateTime printedOn;
-
-	@Column(name = "is_printed")
-	private Boolean printedAll;
-
-	public Picking(Truck truck, User driver, User leadHelper, LocalDate pickDate) {
-		this.truck = truck;
-		this.driver = driver;
-		this.leadHelper = leadHelper;
-		this.pickDate = pickDate;
-	}
 }

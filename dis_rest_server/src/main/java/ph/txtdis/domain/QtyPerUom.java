@@ -7,20 +7,16 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import ph.txtdis.type.UomType;
 
 @Data
 @Entity
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "qty_per_uom", uniqueConstraints = @UniqueConstraint(columnNames = { "item_id", "uom" }) )
-public class QtyPerUom extends TrackedOrder {
+@Table(name = "qty_per_uom", //
+		uniqueConstraints = @UniqueConstraint(columnNames = { "item_id", "uom" }) )
+public class QtyPerUom extends CreationTracked<Long> {
 
 	private static final long serialVersionUID = 3802256527344044201L;
 

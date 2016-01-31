@@ -6,7 +6,7 @@ import java.util.List;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import ph.txtdis.domain.Discount;
+import ph.txtdis.domain.CustomerDiscount;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -18,7 +18,7 @@ public abstract class AbstractSoldOrder<PK> extends AbstractAuditedId<PK> {
 
 	private List<BillableDetail> details;
 
-	private List<Discount> discounts;
+	private List<CustomerDiscount> customerDiscounts;
 
 	private LocalDate dueDate, orderDate;
 

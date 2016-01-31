@@ -1,11 +1,12 @@
 package ph.txtdis.domain;
 
+import static javax.persistence.CascadeType.ALL;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
@@ -13,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,12 +22,14 @@ import lombok.EqualsAndHashCode;
 @Data
 @Entity
 @EqualsAndHashCode(callSuper = true)
-@Table(indexes = {
-// @formatter:off
-		@Index(columnList = "payment_date"),
-		@Index(columnList = "drawee_bank_id, check_id") })
-// @formatter:on
-public class Remittance extends TrackedOrder {
+@Table(indexes = { //
+		@Index(columnList = "created_on, id"), //
+		@Index(columnList = "deposited_on, check_id, payment_date"), //
+		@Index(columnList = "drawee_bank_id, check_id"), //
+		@Index(columnList = "payment_date"), //
+		@Index(columnList = "received_on, check_id, payment_date") }, //
+		uniqueConstraints = @UniqueConstraint(columnNames = { "check_id", "drawee_bank_id" }) )
+public class Remittance extends CreationTracked<Long> {
 
 	private static final long serialVersionUID = -5860334462169889589L;
 
@@ -43,11 +47,7 @@ public class Remittance extends TrackedOrder {
 	@JoinColumn(name = "depositor_bank_id")
 	private Customer depositorBank;
 
-	@ManyToOne
-	private Customer payor;
-
-	@JoinColumn(name = "remittance_id")
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "remittance", cascade = ALL)
 	private List<RemittanceDetail> details;
 
 	@Column(name = "payment_date", nullable = false)
@@ -57,9 +57,6 @@ public class Remittance extends TrackedOrder {
 	private Long checkId;
 
 	private String collector, remarks, depositor;
-
-	@Column(name = "account_id")
-	private String accountNo;
 
 	@Column(name = "received_by")
 	private String receivedBy;

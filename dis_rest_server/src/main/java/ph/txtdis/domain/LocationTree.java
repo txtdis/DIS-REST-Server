@@ -4,19 +4,14 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@AllArgsConstructor
 @Table(name = "location_tree")
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class LocationTree extends TrackedOrder {
+public class LocationTree extends CreationTracked<Long> {
 
 	private static final long serialVersionUID = 7452722249369420815L;
 

@@ -1,5 +1,6 @@
 package ph.txtdis.repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -11,7 +12,12 @@ import ph.txtdis.domain.Picking;
 @Repository("pickingRepository")
 public interface PickListRepository extends SpunRepository<Picking, Long> {
 
-	Picking findByBookingsBookingId(@Param("bookingId") Long id);
+	List<Picking> findByPickDate(@Param("date") LocalDate d);
 
-	List<Picking> findByPickDate(LocalDate date);
+	Picking findByPrintedOnIsNotNullAndBillingsBookingId(@Param("bookingId") Long id);
+
+	Picking findFirstByBillingsBilledOnNullAndPickDate(@Param("date") LocalDate d);
+
+	Picking findFirstByBillingsDueDateAndBillingsUnpaidValueGreaterThanAndPickDate(@Param("dueDate") LocalDate dd,
+			@Param("unpaid") BigDecimal up, @Param("pickDate") LocalDate pd);
 }

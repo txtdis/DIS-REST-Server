@@ -1,81 +1,94 @@
 package ph.txtdis.util;
 
-import java.io.IOException;
+import static java.time.LocalDate.now;
+import static java.time.LocalDate.of;
+import static java.time.ZoneId.systemDefault;
+import static java.time.ZonedDateTime.parse;
+import static java.time.format.DateTimeFormatter.ofPattern;
+import static java.util.Date.from;
+
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.Properties;
-
-import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
-import org.jasypt.properties.EncryptableProperties;
 
 public class DateTimeUtils {
 
-	public static String dateTimeToFileName(ZonedDateTime dateTime) {
-		return dateTime == null ? "" : dateTime.format(timestampFileFormat());
+	public static ZonedDateTime endOfDay(LocalDate d) {
+		return d == null ? null : d.plusDays(1L).atStartOfDay(zoneHere());
 	}
 
-	public static String dateToFileName(LocalDate date) {
-		return date == null ? "" : date.format(DateTimeFormatter.ofPattern("M.d.yy"));
+	public static LocalDate endOfMonth(LocalDate d) {
+		return startOfMonth(d).plusMonths(1L).minusDays(1L);
 	}
 
-	public static StandardPBEStringEncryptor encryptor() {
-		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-		encryptor.setPassword("I'mAdmin4txtDIS@PostgreSQL");
-		return encryptor;
+	public static ZonedDateTime startOfDay(LocalDate d) {
+		return d == null ? null : d.atStartOfDay(zoneHere());
 	}
 
-	public static ZonedDateTime endOfDay(LocalDate date) {
-		return date == null ? null : date.plusDays(1L).atStartOfDay(ZoneId.systemDefault());
+	public static LocalDate startOfMonth(LocalDate d) {
+		return d == null ? now() : of(d.getYear(), d.getMonthValue(), 1);
 	}
 
-	public static LocalDate endOfMonth(LocalDate date) {
-		return startOfMonth(date).plusMonths(1L).minusDays(1L);
+	public static LocalDate toDate(String date) {
+		return date == null ? null : LocalDate.parse(date, dateFormat());
 	}
 
-	public static String formatDate(LocalDate date) {
-		return date == null ? "" : date.format(DateTimeFormatter.ofPattern("M/d/yy"));
+	public static String toDateDisplay(LocalDate d) {
+		return d == null ? "" : d.format(dateFormat());
 	}
 
-	public static String formatZonedDateTime(ZonedDateTime zdt) {
-		return zdt == null ? "" : zdt.format(timestampFormat());
+	public static String toDottedYearMonth(LocalDate d) {
+		return d == null ? "" : d.format(ofPattern("yyyy.MM"));
 	}
 
-	public static String getEncoded(String text) throws IOException {
-		Properties props = new EncryptableProperties(encryptor());
-		props.load(DateTimeUtils.class.getResourceAsStream("/config/application.properties"));
-		return props.getProperty("spring.datasource." + text);
+	public static String toFullMonthYear(LocalDate d) {
+		return d == null ? "" : d.format(ofPattern("MMMM yyyy"));
 	}
 
-	public static Date localToDate(LocalDate localDate) {
-		return localDate == null ? null : Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+	public static String toHypenatedYearMonthDay(LocalDate d) {
+		return d == null ? "" : d.format(ofPattern("yyyy-MM-dd"));
 	}
 
-	public static ZonedDateTime parseZonedDateTime(String zdt) {
-		return zdt == null ? null : ZonedDateTime.parse(zdt, timestampFormat());
+	public static String toLongMonthYear(LocalDate d) {
+		return d == null ? "" : d.format(ofPattern("MMM-yyyy"));
 	}
 
-	public static ZonedDateTime startOfDay(LocalDate date) {
-		return date == null ? null : date.atStartOfDay(ZoneId.systemDefault());
+	public static LocalTime toTime(String s) {
+		return s == null ? null : LocalTime.parse(s, ofPattern("Hmm"));
 	}
 
-	public static LocalDate startOfMonth(LocalDate date) {
-		if (date == null)
-			date = LocalDate.now();
-		return LocalDate.of(date.getYear(), date.getMonthValue(), 1);
+	public static String toTimeDisplay(LocalTime t) {
+		return t == null ? null : t.format(ofPattern("hh:mma"));
 	}
 
-	public static String toFileName(ZonedDateTime dateTime) {
-		return dateTime == null ? "" : dateTime.format(timestampFileFormat());
+	public static String toTimestampFilename(ZonedDateTime zdt) {
+		return zdt == null ? "" : zdt.withZoneSameInstant(zoneHere()).format(ofPattern("yyyy-MM-dd@hh.mma"));
 	}
 
-	private static DateTimeFormatter timestampFileFormat() {
-		return DateTimeFormatter.ofPattern("yyyy-MM-dd@hh.mma");
+	public static String toTimestampText(ZonedDateTime zdt) {
+		return zdt == null ? "" : zdt.withZoneSameInstant(zoneHere()).format(timestampFormat());
+	}
+
+	public static Date toUtilDate(LocalDate d) {
+		return d == null ? null : from(d.atStartOfDay(zoneHere()).toInstant());
+	}
+
+	public static ZonedDateTime toZonedDateTime(String zdt) {
+		return zdt == null ? null : parse(zdt, timestampFormat());
+	}
+
+	private static DateTimeFormatter dateFormat() {
+		return ofPattern("M/d/yyyy");
 	}
 
 	private static DateTimeFormatter timestampFormat() {
-		return DateTimeFormatter.ofPattern("M/d/yy h:mma");
+		return ofPattern("M/d/yyyy h:mma");
+	}
+
+	private static ZoneId zoneHere() {
+		return systemDefault();
 	}
 }

@@ -1,13 +1,21 @@
 package ph.txtdis.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class Backup {
 
 	private byte[] file;
+
+	private String message;
+
+	public Backup(byte[] file) {
+		this.file = file;
+	}
+
+	public Backup(String message) {
+		this.message = message;
+	}
 }

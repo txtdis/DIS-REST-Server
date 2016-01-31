@@ -1,5 +1,10 @@
 package ph.txtdis.printer;
 
+import static gnu.io.CommPortIdentifier.PORT_SERIAL;
+import static gnu.io.SerialPort.DATABITS_8;
+import static gnu.io.SerialPort.PARITY_NONE;
+import static gnu.io.SerialPort.STOPBITS_1;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -45,7 +50,7 @@ public abstract class CDRKingPrinter<T> {
 
 	private static final char PRINTER_STATUS = 1;
 
-	protected static final int COLUMN_WIDTH = 42;
+	protected static final int PAPER_WIDTH = 40;
 
 	protected OutputStream output;
 
@@ -70,7 +75,7 @@ public abstract class CDRKingPrinter<T> {
 
 		while (portIdentifiers.hasMoreElements()) {
 			portId = (CommPortIdentifier) portIdentifiers.nextElement();
-			if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL && portId.getName().equals(comPort)) {
+			if (portId.getPortType() == PORT_SERIAL && portId.getName().equals(comPort)) {
 				portName = portId.getName();
 				break;
 			}
@@ -82,7 +87,7 @@ public abstract class CDRKingPrinter<T> {
 						+ "ensure printer is on and plugged in to said port,\nthen reboot server");
 			} else {
 				serial = portId.open(portName, 100);
-				serial.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+				serial.setSerialPortParams(9600, DATABITS_8, STOPBITS_1, PARITY_NONE);
 				input = serial.getInputStream();
 				output = serial.getOutputStream();
 				printer = new PrintStream(output, true);

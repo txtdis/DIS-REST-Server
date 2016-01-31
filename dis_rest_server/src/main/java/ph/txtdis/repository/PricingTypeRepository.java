@@ -4,6 +4,6 @@ import org.springframework.stereotype.Repository;
 
 import ph.txtdis.domain.PricingType;
 
-@Repository("PricingTypeRepository")
+@Repository("pricingTypeRepository")
 public interface PricingTypeRepository extends NameListRepository<PricingType> {
 }

@@ -40,13 +40,16 @@ COPY route FROM '/Users/txtDIS/db-convert/data/route.csv'(FORMAT 'csv', DELIMITE
 
 SELECT setval ('route_id_seq', max (id)) FROM route;
 
+INSERT INTO route (name, created_by, created_on)
+     VALUES ('PRE-SELL 1', 'SYSGEN', current_timestamp);
+
 COPY routing FROM '/Users/txtDIS/db-convert/data/routing.csv'(FORMAT 'csv', DELIMITER '|', HEADER);
 
 SELECT setval ('routing_id_seq', max (id)) FROM routing;
 
 COPY billing FROM '/Users/txtDIS/db-convert/data/billing.csv'(FORMAT 'csv', DELIMITER '|', HEADER);
 
-SELECT setval ('billing_id_seq', max (id)) FROM billing;
+SELECT setval ('billing_id_seq', max (booking_id)) FROM billing;
 
 COPY billing_detail FROM '/Users/txtDIS/db-convert/data/billing_detail.csv'(FORMAT 'csv', DELIMITER '|', HEADER);
 
@@ -62,6 +65,96 @@ COPY remittance_detail FROM '/Users/txtDIS/db-convert/data/remittance_detail.csv
 
 SELECT setval ('remittance_detail_id_seq', max (id)) FROM remittance_detail;
 
-END;
+COPY invoice_booklet FROM '/Users/txtDIS/db-convert/data/invoice_booklet.csv'(FORMAT 'csv', DELIMITER '|', HEADER);
 
+SELECT setval ('invoice_booklet_id_seq', max (id)) FROM invoice_booklet;
+
+CREATE TEMP TABLE temp_routing
+(
+   customer_id   int,
+   route_id      int
+)
+ON COMMIT DROP;
+
+COPY temp_routing FROM '/Users/txtDIS/db-convert/data/routing_update.csv'(FORMAT 'csv', DELIMITER '|');
+
+INSERT INTO routing (created_by,
+                     created_on,
+                     start_date,
+                     route_id,
+                     customer_id)
+   SELECT 'SYSGEN',
+          current_timestamp,
+          current_date,
+          route_id,
+          customer_id
+     FROM temp_routing;
+
+INSERT INTO account (created_by,
+                     created_on,
+                     seller,
+                     start_date,
+                     route_id)
+     VALUES ('SYSGEN',
+             current_timestamp,
+             'NOEL',
+             '2014-01-01',
+             4),
+            ('SYSGEN',
+             current_timestamp,
+             'MARIVIC',
+             '2014-01-01',
+             7),
+            ('SYSGEN',
+             current_timestamp,
+             'JOSEPHINE',
+             '2014-11-17',
+             5),
+            ('SYSGEN',
+             current_timestamp,
+             'HOMER',
+             '2015-06-01',
+             8),
+            ('SYSGEN',
+             current_timestamp,
+             'ROELYN',
+             '2014-08-27',
+             1);
+
+INSERT INTO stock_take (id,
+                        created_by,
+                        created_on,
+                        stock_take_date,
+                        checker_username,
+                        taker_username,
+                        warehouse_id)
+     VALUES (0,
+             'SYSGEN',
+             current_timestamp,
+             '2015-11-29',
+             'MARIVIC',
+             'SHERYL',
+             1);
+
+CREATE TEMP TABLE temp_count
+(
+   item_id   int,
+   qty       numeric (10, 4)
+)
+ON COMMIT DROP;
+
+COPY temp_count FROM '/Users/txtDIS/db-convert/data/inventory.csv'(FORMAT 'csv', DELIMITER '|', HEADER);
+
+INSERT INTO stock_take_detail (qty,
+                               quality,
+                               uom,
+                               item_id,
+                               stock_take_id)
+   SELECT qty, 0, 0, item_id, 0 FROM temp_count;
+
+INSERT INTO stocks (good_qty, item_id)
+   SELECT qty, item_id FROM temp_count;
+
+
+END;
 --\i '/Users/txtDIS/db-convert/sql/copyDB.sql';

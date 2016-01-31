@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import static ph.txtdis.util.DateTimeUtils.endOfDay;
 import static ph.txtdis.util.DateTimeUtils.startOfDay;
 
+import ph.txtdis.converter.BillingToBillableConverter;
 import ph.txtdis.domain.Billing;
 import ph.txtdis.dto.Billable;
 import ph.txtdis.repository.BillingRepository;
-import ph.txtdis.service.BillingToBillableConverter;
 
 @RestController("deliveryReportController")
 @RequestMapping("/deliveryReports")
@@ -41,35 +41,57 @@ public class DeliveryReportController extends IdController<BillingRepository, Bi
 
 	@RequestMapping(path = "/first", method = RequestMethod.GET)
 	public ResponseEntity<?> first() {
-		Billing b = repository.findFirstByNumIdNotNullAndNumIdLessThanOrderByNumIdDesc(0L);
+		Billing b = firstSpun();
 		Billable i = fromBilling.toBillable(b);
-		setNegativeNumIdAsBillableIdForSpinning(i);
 		return new ResponseEntity<>(i, HttpStatus.OK);
+	}
+
+	@RequestMapping(path = "/firstToSpin", method = GET)
+	public ResponseEntity<?> firstToSpin() {
+		Billing b = firstSpun();
+		Billable i = spunIdOnlyBillable(b);
+		return new ResponseEntity<>(i, OK);
 	}
 
 	@RequestMapping(path = "/last", method = RequestMethod.GET)
 	public ResponseEntity<?> last() {
-		Billing b = repository.findFirstByNumIdNotNullAndNumIdLessThanOrderByNumIdAsc(0L);
+		Billing b = lastSpun();
 		Billable i = fromBilling.toBillable(b);
-		setNegativeNumIdAsBillableIdForSpinning(i);
 		return new ResponseEntity<>(i, HttpStatus.OK);
+	}
+
+	@RequestMapping(path = "/lastToSpin", method = GET)
+	public ResponseEntity<?> lastToSpin() {
+		Billing b = lastSpun();
+		Billable i = spunIdOnlyBillable(b);
+		return new ResponseEntity<>(i, OK);
 	}
 
 	@RequestMapping(path = "/next", method = RequestMethod.GET)
 	public ResponseEntity<?> next(@RequestParam("id") Long id) {
-		Billing b = repository.findFirstByNumIdNotNullAndNumIdLessThanOrderByNumIdDesc(id);
+		Billing b = repository.findFirstByNumIdNotNullAndNumIdLessThanAndNumIdLessThanOrderByNumIdDesc(0L, id);
 		Billable i = fromBilling.toBillable(b);
 		return new ResponseEntity<>(i, HttpStatus.OK);
 	}
 
 	@RequestMapping(path = "/previous", method = RequestMethod.GET)
 	public ResponseEntity<?> previous(@RequestParam("id") Long id) {
-		Billing b = repository.findFirstByNumIdNotNullAndNumIdGreaterThanOrderByNumIdAsc(id);
+		Billing b = repository.findFirstByNumIdNotNullAndNumIdLessThanAndNumIdGreaterThanOrderByNumIdAsc(0L, id);
 		Billable i = fromBilling.toBillable(b);
 		return new ResponseEntity<>(i, HttpStatus.OK);
 	}
 
-	private void setNegativeNumIdAsBillableIdForSpinning(Billable i) {
-		i.setId(i.getNumId());
+	private Billing firstSpun() {
+		return repository.findFirstByNumIdNotNullAndNumIdLessThanOrderByNumIdDesc(0L);
+	}
+
+	private Billing lastSpun() {
+		return repository.findFirstByNumIdNotNullAndNumIdLessThanOrderByNumIdAsc(0L);
+	}
+
+	private Billable spunIdOnlyBillable(Billing b) {
+		Billable i = new Billable();
+		i.setId(b == null ? null : b.getNumId());
+		return i;
 	}
 }

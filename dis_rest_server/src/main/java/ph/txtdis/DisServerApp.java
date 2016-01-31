@@ -5,13 +5,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@SpringBootApplication
 @EnableScheduling
+// @EnableTransactionManagement
 @EnableJpaAuditing(auditorAwareRef = "springSecurityAuditorAware")
+@SpringBootApplication
+// (exclude = { DataSourceAutoConfiguration.class,
+// HibernateJpaAutoConfiguration.class,
+// DataSourceTransactionManagerAutoConfiguration.class})
 public class DisServerApp {
 
 	public static void main(String[] args) {
 		System.setProperty("jasypt.encryptor.password", "I'mAdmin4txtDIS@PostgreSQL");
-		SpringApplication.run(DisServerApp.class, "--debug");
+		SpringApplication.run(DisServerApp.class);// , "--debug");
 	}
 }

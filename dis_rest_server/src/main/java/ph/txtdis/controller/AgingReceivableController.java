@@ -2,7 +2,9 @@ package ph.txtdis.controller;
 
 import static java.time.LocalDate.now;
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.util.stream.Collectors.toList;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static ph.txtdis.util.NumberUtils.isZero;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -16,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.ZERO;
 
 import ph.txtdis.domain.Billing;
@@ -122,8 +123,15 @@ public class AgingReceivableController {
 			sumInvoiceBalancesToItsDaysOverReceivableTotal();
 			return new AgingReceivableReport(agingReceivables, totals, ZonedDateTime.now());
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
+	}
+
+	private Billing reviseUnpaidForPostDatedCheck(Billing b) {
+		if (isZero(b.getUnpaidValue()))
+			b.setUnpaidValue(b.getTotalValue());
+		return b;
 	}
 
 	private void sumAgingBalances(Billing i, long daysOver) {
@@ -163,8 +171,8 @@ public class AgingReceivableController {
 	}
 
 	private void sumInvoiceBalancesToItsDaysOverReceivableTotal() {
-		List<Billing> list = repository
-				.findByFullyPaidFalseAndUnpaidValueGreaterThanOrderByCustomerAscOrderDateDesc(ONE);
-		list.forEach(i -> sumBalancesPerCustomer(i));
+		List<Billing> l = repository.findByNumIdNotNullAndFullyPaidFalseOrderByCustomerAscOrderDateDesc();
+		l = l.stream().map(b -> reviseUnpaidForPostDatedCheck(b)).collect(toList());
+		l.forEach(i -> sumBalancesPerCustomer(i));
 	}
 }

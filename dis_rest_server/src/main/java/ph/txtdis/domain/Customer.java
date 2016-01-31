@@ -1,32 +1,31 @@
 package ph.txtdis.domain;
 
 import static java.time.LocalDate.now;
+import static javax.persistence.CascadeType.ALL;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import ph.txtdis.type.CustomerType;
+import ph.txtdis.type.PartnerType;
 import ph.txtdis.type.VisitFrequency;
 
 @Data
 @Entity
-@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Table(indexes = { @Index(columnList = "name"), @Index(columnList = "deactivated_on, type") })
-public class Customer extends AbstractDeactivatedName {
+@Table(indexes = { @Index(columnList = "name"), @Index(columnList = "deactivated_on, type, name") })
+public class Customer extends ModificationTracked<Long> {
 
 	private static final long serialVersionUID = -878749889584633340L;
 
@@ -49,7 +48,7 @@ public class Customer extends AbstractDeactivatedName {
 	@JoinColumn(name = "alternate_pricing")
 	private PricingType alternatePricingType;
 
-	private CustomerType type;
+	private PartnerType type;
 
 	@ManyToOne
 	private Channel channel;
@@ -58,7 +57,11 @@ public class Customer extends AbstractDeactivatedName {
 	private VisitFrequency visitFrequency;
 
 	@JoinColumn(name = "customer_id")
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = ALL)
+	private List<WeeklyVisit> visitSchedule;
+
+	@JoinColumn(name = "customer_id")
+	@OneToMany(cascade = ALL)
 	private List<Routing> routeHistory;
 
 	@Column(name = "contact_name")
@@ -73,24 +76,26 @@ public class Customer extends AbstractDeactivatedName {
 	private String mobile;
 
 	@JoinColumn(name = "customer_id")
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = ALL)
 	private List<CreditDetail> creditDetails;
 
 	@JoinColumn(name = "customer_id")
-	@OneToMany(cascade = CascadeType.ALL)
-	private List<Discount> discounts;
+	@OneToMany(cascade = ALL)
+	@OrderBy("startDate DESC, familyLimit DESC, level ASC")
+	private List<CustomerDiscount> customerDiscounts;
 
 	@ManyToOne
 	private Customer parent;
 
-	public Customer(String name, CustomerType type) {
-		super(name);
-		this.type = type;
-	}
-
 	@JsonIgnore
 	public String getAddress() {
 		return street() + barangay() + city() + province();
+	}
+
+	public String getLocation() {
+		if (barangay == null)
+			return "";
+		return barangay + city();
 	}
 
 	@JsonIgnore

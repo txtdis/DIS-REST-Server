@@ -3,21 +3,14 @@ package ph.txtdis.domain;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @Table(name = "pricing_type")
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PricingType extends AbstractName {
+public class PricingType extends Named<Long> {
 
 	private static final long serialVersionUID = 8599562798765096281L;
-
-	public PricingType(String name) {
-		super(name);
-	}
 }

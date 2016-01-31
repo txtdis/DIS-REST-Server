@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import static java.math.BigDecimal.ONE;
-
 import ph.txtdis.domain.Billing;
 import ph.txtdis.domain.Customer;
 import ph.txtdis.dto.CustomerReceivable;
@@ -46,7 +44,7 @@ public class CustomerReceivableController {
 		return new ResponseEntity<>(r == null ? null : r, HttpStatus.OK);
 	}
 
-	private void computeTotals(List<CustomerReceivable> receivables) {
+	private void computeTotals() {
 		totals = new ArrayList<>(2);
 		for (int i = 0; i < 2; i++)
 			totals.add(BigDecimal.ZERO);
@@ -61,8 +59,7 @@ public class CustomerReceivableController {
 	}
 
 	private CustomerReceivableReport extractDataFromInvoices(Customer c, long low, long up) {
-		List<Billing> list = repository.findByFullyPaidFalseAndCustomerAndUnpaidValueGreaterThanOrderByOrderDateDesc(c,
-				ONE);
+		List<Billing> list = repository.findByNumIdNotNullAndFullyPaidFalseAndCustomerOrderByOrderDateDesc(c);
 		if (list != null)
 			setData(low, up, list);
 		return new CustomerReceivableReport(receivables, totals, customerName, ZonedDateTime.now());
@@ -83,6 +80,6 @@ public class CustomerReceivableController {
 	private void setData(long low, long up, List<Billing> list) {
 		generateReceivableList(low, up, list);
 		setCustomer(list);
-		computeTotals(receivables);
+		computeTotals();
 	}
 }

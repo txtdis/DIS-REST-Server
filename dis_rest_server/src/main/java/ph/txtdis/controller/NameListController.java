@@ -10,10 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import ph.txtdis.domain.AbstractName;
+import ph.txtdis.domain.Named;
 import ph.txtdis.repository.NameListRepository;
 
-public abstract class NameListController<R extends NameListRepository<T>, T extends AbstractName>
+public abstract class NameListController<R extends NameListRepository<T>, T extends Named<?>>
 		extends CreateController<R, T, Long>
 {
 

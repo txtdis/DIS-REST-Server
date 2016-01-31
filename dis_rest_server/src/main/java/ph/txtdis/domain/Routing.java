@@ -8,19 +8,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = { "customer_id", "start_date" }) )
-public class Routing extends TrackedOrder {
+public class Routing extends CreationTracked<Long> {
 
 	private static final long serialVersionUID = -4540897080828317375L;
 

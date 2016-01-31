@@ -8,6 +8,10 @@ import javafx.scene.image.Image;
 
 public abstract class Printer<T> extends CDRKingPrinter<T> {
 
+	protected static final int LARGE_FONT_PAPER_WIDTH = PAPER_WIDTH / 2;
+
+	protected static final int HALF_PAPER_WIDTH = LARGE_FONT_PAPER_WIDTH - 2;
+
 	private int[][] getLogo() {
 		String string;
 		Image image = new Image(this.getClass().getResourceAsStream("/image/magnum.jpg"));
@@ -45,18 +49,22 @@ public abstract class Printer<T> extends CDRKingPrinter<T> {
 	}
 
 	protected void printDashes() {
-		printer.println(leftPad("", COLUMN_WIDTH, "-"));
+		printer.println(leftPad("", PAPER_WIDTH, "-"));
 	}
 
 	protected abstract void printDetails() throws Exception;
 
 	protected void printEndOfPage() {
-		printer.println(leftPad("", COLUMN_WIDTH, "_"));
+		printer.println(leftPad("", PAPER_WIDTH, "_"));
+		printFourLines();
+	}
+
+	protected void printFourLines() {
 		for (int i = 0; i < 4; i++)
 			printer.println();
 	}
 
-	protected abstract void printFooter();
+	protected abstract void printFooter() throws IOException;
 
 	protected abstract void printSubheader() throws IOException;
 

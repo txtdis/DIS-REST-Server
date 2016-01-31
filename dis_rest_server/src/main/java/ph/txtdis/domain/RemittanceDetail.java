@@ -1,8 +1,9 @@
 package ph.txtdis.domain;
 
+import static javax.persistence.CascadeType.ALL;
+
 import java.math.BigDecimal;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -15,16 +16,16 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Table(name = "remittance_detail")
 @EqualsAndHashCode(callSuper = true)
-public class RemittanceDetail extends AbstractId {
+public class RemittanceDetail extends AbstractId<Long> {
 
 	private static final long serialVersionUID = -968954060788678059L;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, cascade = ALL)
 	private Remittance remittance;
 
-	@ManyToOne(optional = false, cascade = CascadeType.ALL)
+	@ManyToOne(optional = false, cascade = ALL)
 	private Billing billing;
 
-	@Column(name = "payment", nullable = false, precision = 8, scale = 2)
+	@Column(name = "payment", precision = 8, scale = 2)
 	private BigDecimal paymentValue;
 }

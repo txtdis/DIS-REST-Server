@@ -9,21 +9,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import ph.txtdis.type.UomType;
 import ph.txtdis.type.VolumeDiscountType;
 
 @Data
 @Entity
-@AllArgsConstructor
 @Table(name = "volume_discount")
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class VolumeDiscount extends TrackedOrder {
+public class VolumeDiscount extends DecisionNeeded {
 
 	private static final long serialVersionUID = 7710563453808768120L;
 
@@ -44,12 +39,4 @@ public class VolumeDiscount extends TrackedOrder {
 	@ManyToOne
 	@JoinColumn(name = "channel_limit")
 	private Channel channelLimit;
-
-	public VolumeDiscount(VolumeDiscountType type, UomType uom, int cutoff, BigDecimal discount, LocalDate startDate) {
-		this.type = type;
-		this.uom = uom;
-		this.cutoff = cutoff;
-		this.discount = discount;
-		this.startDate = startDate;
-	}
 }

@@ -7,14 +7,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import ph.txtdis.exception.FailedBackupDownloadException;
-import ph.txtdis.exception.FailedBackupException;
-import ph.txtdis.exception.FailedBackupUploadException;
 import ph.txtdis.exception.FailedReplicationException;
-import ph.txtdis.sync.BackupDownloader;
-import ph.txtdis.sync.BackupService;
-import ph.txtdis.sync.BackupUploader;
-import ph.txtdis.sync.RestoreService;
+import ph.txtdis.service.BackupService;
+import ph.txtdis.service.DownloadService;
+import ph.txtdis.service.PostDatedChequeService;
+import ph.txtdis.service.RestoreService;
+import ph.txtdis.service.UploadService;
 
 @Component("scheduledTasks")
 public class ScheduledTasks {
@@ -23,10 +21,13 @@ public class ScheduledTasks {
 	private BackupService backupService;
 
 	@Autowired
-	private BackupUploader backupUploader;
+	private UploadService uploadService;
 
 	@Autowired
-	private BackupDownloader backupDownloader;
+	private DownloadService downloadService;
+
+	@Autowired
+	private PostDatedChequeService postDatedChequeService;
 
 	@Autowired
 	private RestoreService restoreService;
@@ -34,57 +35,133 @@ public class ScheduledTasks {
 	@Value("${replication}")
 	private String replication;
 
-	private boolean downloaded;
+	private boolean downloadedBackup, madeBackup, uploadedBackup, restoredBackup, updatedPostDatedChecks,
+			valuatedInventories, deactivatedNonBuyingOutlets, deactivatedNonMovingItems;
 
-	@Scheduled(cron = "* * * * * MON-SAT")
-	public void syncServers() {
-		// if (replication.equals("master"))
-		// sendReplica();
-		// else
-		// replicate();
+	@Scheduled(cron = "0 30 9/1 * * MON-SAT")
+	public void reretrieveOnFailures() {
+		if (isSlave())
+			retrieveBackup();
 	}
 
-	private void backupServer() throws FailedBackupException {
-		backupService.backup();
+	@Scheduled(cron = "0 0 9/1 * * MON-SAT")
+	public void resendOnFailures() {
+		if (isMaster())
+			sendBackup();
 	}
 
-	private void downloadBackup() throws FailedBackupDownloadException {
-		backupDownloader.download(new Date());
+	@Scheduled(cron = "0 30 8 * * MON-SAT")
+	public void retrieveBackup() {
+		if (isSlave())
+			restoreFromMailedBackup();
 	}
 
-	private void replicate() {
+	@Scheduled(cron = "0 0 8 * * MON-SAT")
+	public void sendBackup() {
+		if (isMaster())
+			mailUpdatedBackup();
+	}
+
+	private void backupServer() {
 		try {
-			if (!downloaded)
-				downloadBackup();
-			restoreBackup();
-		} catch (FailedBackupDownloadException e) {
-			// TODO Auto-generated catch block
+			if (!madeBackup) {
+				backupService.backup();
+				madeBackup = true;
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
+			madeBackup = false;
+		}
+	}
+
+	private void deactivateNonBuyingOutlets() {
+		if (!deactivatedNonBuyingOutlets) {
+			// TODO
+			deactivatedNonBuyingOutlets = true;
+		}
+	}
+
+	private void deactivateNonMovingItems() {
+		if (!deactivatedNonMovingItems) {
+			// TODO
+			deactivatedNonMovingItems = true;
+		}
+	}
+
+	private void downloadBackup() {
+		try {
+			if (!downloadedBackup) {
+				downloadService.downloadBackup(new Date());
+				downloadedBackup = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			downloadedBackup = false;
+		}
+	}
+
+	private boolean isMaster() {
+		return replication.equals("master");
+	}
+
+	private boolean isSlave() {
+		return !isMaster();
+	}
+
+	private void mailUpdatedBackup() {
+		updateData();
+		backupServer();
+		uploadBackup();
+	}
+
+	private void restoreBackup() {
+		try {
+			if (!restoredBackup) {
+				restoreService.restore();
+				restoredBackup = true;
+			}
 		} catch (FailedReplicationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-			downloaded = true;
+			restoredBackup = false;
 		}
 	}
 
-	private void restoreBackup() throws FailedReplicationException {
-		restoreService.restore();
+	private void restoreFromMailedBackup() {
+		downloadBackup();
+		restoreBackup();
 	}
 
-	private void sendReplica() {
+	private void updateData() {
+		// TODO Auto-generated method stub
+		deactivateNonBuyingOutlets();
+		deactivateNonMovingItems();
+		updatePostDatedChecks();
+		valuateInventory();
+	}
+
+	private void updatePostDatedChecks() {
+		if (!updatedPostDatedChecks) {
+			postDatedChequeService.setFullyPaidForMaturedPostDatedChecks();
+			updatedPostDatedChecks = true;
+		}
+	}
+
+	private void uploadBackup() {
 		try {
-			backupServer();
-			uploadBackup();
-		} catch (FailedBackupException e) {
-			// TODO Auto-generated catch block
+			if (!uploadedBackup) {
+				uploadService.uploadBackup();
+				uploadedBackup = true;
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (FailedBackupUploadException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			uploadedBackup = false;
 		}
 	}
 
-	private void uploadBackup() throws FailedBackupUploadException {
-		backupUploader.upload();
+	private void valuateInventory() {
+		if (!valuatedInventories) {
+			// TODO
+			valuatedInventories = true;
+		}
 	}
 }
