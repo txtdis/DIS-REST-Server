@@ -14,18 +14,18 @@ import ph.txtdis.domain.Remittance;
 @Repository("remittanceRepository")
 public interface RemittanceRepository extends SpunRepository<Remittance, Long> {
 
-	List<Remittance> findByCreatedOnGreaterThanOrderByIdDesc(@Param("twoWeeksAgo") ZonedDateTime t);
-
 	List<Remittance> findByDetailsBilling(@Param("billing") Billing b);
 
-	List<Remittance> findByDetailsBillingCustomerNotAndDepositedOnNullAndCheckIdNullAndPaymentDateBetweenOrderByPaymentDateAsc(
+	List<Remittance> findByDetailsBillingCustomerNotAndDepositedOnNullAndCheckIdNullAndPaymentDateBetween(
 			@Param("vendor") Customer v, @Param("start") LocalDate s, @Param("end") LocalDate e);
 
-	List<Remittance> findByDetailsBillingCustomerNotAndReceivedOnNullAndCheckIdNotNullAndPaymentDateBetweenOrderByPaymentDateAsc(
+	List<Remittance> findByDetailsBillingCustomerNotAndReceivedOnNullAndCheckIdNotNullAndPaymentDateBetween(
 			@Param("vendor") Customer v, @Param("start") LocalDate s, @Param("end") LocalDate e);
 
-	Remittance findByDraweeBankAndCheckIdAndIsValidIn(@Param("bank") Customer b, @Param("checkId") Long id,
-			@Param("isValid") List<Boolean> l);
+	List<Remittance> findByDraweeBankAndCheckId(@Param("bank") Customer b, @Param("checkId") Long id);
+
+	List<Remittance> findByPaymentDateGreaterThanAndDepositedOnNullOrDecidedOnNullOrderByIdDesc(
+			@Param("goLive") LocalDate d);
 
 	Remittance findFirstByCollectorAndPaymentDateAndCheckIdNull(@Param("collector") String n,
 			@Param("date") LocalDate d);

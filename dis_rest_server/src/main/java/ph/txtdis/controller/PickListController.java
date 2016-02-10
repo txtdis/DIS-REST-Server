@@ -22,13 +22,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import ph.txtdis.converter.PickListToPickingConverter;
-import ph.txtdis.converter.PickingToPickListConverter;
 import ph.txtdis.domain.Picking;
 import ph.txtdis.dto.PickList;
 import ph.txtdis.exception.FailedPrintingException;
 import ph.txtdis.printer.PickListPrinter;
 import ph.txtdis.repository.PickListRepository;
+import ph.txtdis.service.PickListToPickingService;
+import ph.txtdis.service.PickingToPickListService;
 
 @RestController("pickListController")
 @RequestMapping("/pickLists")
@@ -41,10 +41,10 @@ public class PickListController {
 	private PickListRepository pickListRepository;
 
 	@Autowired
-	private PickingToPickListConverter fromPicking;
+	private PickingToPickListService fromPicking;
 
 	@Autowired
-	private PickListToPickingConverter fromPickList;
+	private PickListToPickingService fromPickList;
 
 	@RequestMapping(path = "/{id}", method = GET)
 	public ResponseEntity<?> find(@PathVariable Long id) {

@@ -23,21 +23,21 @@ import org.springframework.web.bind.annotation.RestController;
 import static ph.txtdis.util.DateTimeUtils.endOfDay;
 import static ph.txtdis.util.DateTimeUtils.startOfDay;
 
-import ph.txtdis.converter.StockTakeToStockTakingConverter;
-import ph.txtdis.converter.StockTakingToStockTakeConverter;
 import ph.txtdis.domain.StockTaking;
 import ph.txtdis.dto.StockTake;
 import ph.txtdis.repository.StockTakeRepository;
+import ph.txtdis.service.StockTakeToStockTakingService;
+import ph.txtdis.service.StockTakingToStockTakeService;
 
 @RestController("StockTakingController")
 @RequestMapping("/stockTakes")
 public class StockTakeController {
 
 	@Autowired
-	private StockTakingToStockTakeConverter fromStockTaking;
+	private StockTakingToStockTakeService fromStockTaking;
 
 	@Autowired
-	private StockTakeToStockTakingConverter fromStockTake;
+	private StockTakeToStockTakingService fromStockTake;
 
 	@Autowired
 	private StockTakeRepository repository;

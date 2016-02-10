@@ -1,4 +1,4 @@
-package ph.txtdis.converter;
+package ph.txtdis.service;
 
 import static java.util.stream.Collectors.toList;
 
@@ -14,8 +14,8 @@ import ph.txtdis.domain.User;
 import ph.txtdis.dto.Booking;
 import ph.txtdis.dto.PickList;
 
-@Service("pickingToPickListConverter")
-public class PickingToPickListConverter {
+@Service("pickingToPickListService")
+public class PickingToPickListService {
 
 	public List<PickList> toPickList(List<Picking> p) {
 		return p == null ? null : convert(p);

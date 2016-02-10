@@ -10,6 +10,6 @@ public class FailedPrintingException extends Exception {
 	private static final long serialVersionUID = -5399480827294368809L;
 
 	public FailedPrintingException(String message) {
-		super("Printing failed:\n" + message);
+		super("Printing failed: " + message);
 	}
 }

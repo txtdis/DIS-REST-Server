@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import ph.txtdis.exception.FailedBackupException;
+import ph.txtdis.exception.FailedReplicationException;
 
 @Service("backupService")
 public class BackupService {
@@ -37,16 +37,16 @@ public class BackupService {
 
 	private String backup;
 
-	public void backup() throws FailedBackupException {
+	public void backup() throws FailedReplicationException {
 		try {
 			backup = getProperty("user.home") + separator + databaseName + ".backup";
 			startBackup();
 		} catch (Exception e) {
-			throw new FailedBackupException();
+			throw new FailedReplicationException("Backup");
 		}
 	}
 
-	public byte[] getBackupBytes() throws FailedBackupException {
+	public byte[] getBackupBytes() throws FailedReplicationException {
 		backup();
 		return toBytes(backup);
 	}
@@ -89,11 +89,11 @@ public class BackupService {
 		return "pg_dump";
 	}
 
-	private void startBackup() throws IOException, InterruptedException, FailedBackupException {
+	private void startBackup() throws IOException, InterruptedException, FailedReplicationException {
 		Process p = buildProcess().start();
 		logBackupProcess(p);
 		p.waitFor();
 		if (p.exitValue() != 0)
-			throw new FailedBackupException();
+			throw new FailedReplicationException("Backup");
 	}
 }

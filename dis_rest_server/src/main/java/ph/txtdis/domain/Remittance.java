@@ -29,15 +29,12 @@ import lombok.EqualsAndHashCode;
 		@Index(columnList = "payment_date"), //
 		@Index(columnList = "received_on, check_id, payment_date") }, //
 		uniqueConstraints = @UniqueConstraint(columnNames = { "check_id", "drawee_bank_id" }) )
-public class Remittance extends CreationTracked<Long> {
+public class Remittance extends DecisionNeeded {
 
 	private static final long serialVersionUID = -5860334462169889589L;
 
 	@Column(nullable = false, precision = 8, scale = 2)
 	private BigDecimal value;
-
-	@Column(name = "is_valid")
-	private Boolean isValid;
 
 	@ManyToOne
 	@JoinColumn(name = "drawee_bank_id")
@@ -56,22 +53,16 @@ public class Remittance extends CreationTracked<Long> {
 	@Column(name = "check_id")
 	private Long checkId;
 
-	private String collector, remarks, depositor;
+	private String collector, depositor;
 
 	@Column(name = "received_by")
 	private String receivedBy;
-
-	@Column(name = "audited_by")
-	private String auditedBy;
 
 	@Column(name = "deposited_on")
 	private ZonedDateTime depositedOn;
 
 	@Column(name = "received_on")
 	private ZonedDateTime receivedOn;
-
-	@Column(name = "audited_on")
-	private ZonedDateTime auditedOn;
 
 	@Column(name = "depositor_on")
 	private ZonedDateTime depositorOn;

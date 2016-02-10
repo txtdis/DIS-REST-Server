@@ -1,4 +1,4 @@
-package ph.txtdis.converter;
+package ph.txtdis.service;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -29,8 +29,8 @@ import ph.txtdis.dto.Billable;
 import ph.txtdis.dto.BillableDetail;
 import ph.txtdis.repository.RemittanceDetailRepository;
 
-@Service("billingToBillableConverter")
-public class BillingToBillableConverter {
+@Service("billingToBillableService")
+public class BillingToBillableService {
 
 	@Autowired
 	private RemittanceDetailRepository remitDetailRepo;
@@ -77,8 +77,8 @@ public class BillingToBillableConverter {
 			i.setBilledBy(b.getBilledBy());
 			i.setBilledOn(b.getBilledOn());
 
-			i.setAuditedBy(b.getAuditedBy());
-			i.setAuditedOn(b.getAuditedOn());
+			i.setDecidedBy(b.getDecidedBy());
+			i.setDecidedOn(b.getDecidedOn());
 			i.setIsValid(b.getIsValid());
 
 			i.setPayments(payments(b));

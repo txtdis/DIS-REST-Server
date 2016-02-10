@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 import static ph.txtdis.util.DateTimeUtils.endOfDay;
 import static ph.txtdis.util.DateTimeUtils.startOfDay;
 
-import ph.txtdis.converter.BillingToBillableConverter;
 import ph.txtdis.domain.Billing;
 import ph.txtdis.domain.Customer;
 import ph.txtdis.dto.Billable;
 import ph.txtdis.repository.BillingRepository;
 import ph.txtdis.repository.CustomerRepository;
+import ph.txtdis.service.BillingToBillableService;
 
 @RestController("salesOrderController")
 @RequestMapping("/salesOrders")
@@ -31,7 +31,7 @@ public class SalesOrderController extends IdController<BillingRepository, Billin
 	private CustomerRepository customer;
 
 	@Autowired
-	private BillingToBillableConverter fromBilling;
+	private BillingToBillableService fromBilling;
 
 	@Value("${vendor.id}")
 	private String vendorId;

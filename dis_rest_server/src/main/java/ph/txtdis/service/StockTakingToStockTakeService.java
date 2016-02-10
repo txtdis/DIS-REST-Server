@@ -1,4 +1,4 @@
-package ph.txtdis.converter;
+package ph.txtdis.service;
 
 import static java.util.stream.Collectors.toList;
 
@@ -14,8 +14,8 @@ import ph.txtdis.domain.Warehouse;
 import ph.txtdis.dto.StockTake;
 import ph.txtdis.dto.StockTakeDetail;
 
-@Service("stockTakingToStockTakeConverter")
-public class StockTakingToStockTakeConverter {
+@Service("stockTakingToStockTakeService")
+public class StockTakingToStockTakeService {
 
 	public List<StockTake> toStockTake(List<StockTaking> p) {
 		return p == null ? null : convert(p);

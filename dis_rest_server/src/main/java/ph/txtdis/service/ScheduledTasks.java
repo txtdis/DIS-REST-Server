@@ -1,18 +1,19 @@
-package ph.txtdis;
+package ph.txtdis.service;
+
+import static ph.txtdis.type.SyncType.BACKUP;
 
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import static ph.txtdis.util.DateTimeUtils.epochDate;
+
+import ph.txtdis.domain.Sync;
 import ph.txtdis.exception.FailedReplicationException;
-import ph.txtdis.service.BackupService;
-import ph.txtdis.service.DownloadService;
-import ph.txtdis.service.PostDatedChequeService;
-import ph.txtdis.service.RestoreService;
-import ph.txtdis.service.UploadService;
+import ph.txtdis.repository.SyncRepository;
+import ph.txtdis.type.SyncType;
 
 @Component("scheduledTasks")
 public class ScheduledTasks {
@@ -32,33 +33,40 @@ public class ScheduledTasks {
 	@Autowired
 	private RestoreService restoreService;
 
-	@Value("${replication}")
-	private String replication;
+	@Autowired
+	private ServerService server;
+
+	@Autowired
+	private SyncRepository repository;
+
+	private Date date;
 
 	private boolean downloadedBackup, madeBackup, uploadedBackup, restoredBackup, updatedPostDatedChecks,
 			valuatedInventories, deactivatedNonBuyingOutlets, deactivatedNonMovingItems;
 
 	@Scheduled(cron = "0 30 9/1 * * MON-SAT")
 	public void reretrieveOnFailures() {
-		if (isSlave())
-			retrieveBackup();
+		if (server.isSlave())
+			// retrieveBackup()
+			;
 	}
 
 	@Scheduled(cron = "0 0 9/1 * * MON-SAT")
 	public void resendOnFailures() {
-		if (isMaster())
+		if (server.isMaster())
 			sendBackup();
 	}
 
 	@Scheduled(cron = "0 30 8 * * MON-SAT")
 	public void retrieveBackup() {
-		if (isSlave())
-			restoreFromMailedBackup();
+		if (server.isSlave())
+			// restoreFromMailedBackup()
+			;
 	}
 
 	@Scheduled(cron = "0 0 8 * * MON-SAT")
 	public void sendBackup() {
-		if (isMaster())
+		if (server.isMaster())
 			mailUpdatedBackup();
 	}
 
@@ -90,25 +98,18 @@ public class ScheduledTasks {
 
 	private void downloadBackup() {
 		try {
-			if (!downloadedBackup) {
-				downloadService.downloadBackup(new Date());
-				downloadedBackup = true;
-			}
+			if (downloadedBackup)
+				return;
+			date = downloadService.download(BACKUP, date);
+			downloadedBackup = true;
 		} catch (Exception e) {
 			e.printStackTrace();
 			downloadedBackup = false;
 		}
 	}
 
-	private boolean isMaster() {
-		return replication.equals("master");
-	}
-
-	private boolean isSlave() {
-		return !isMaster();
-	}
-
 	private void mailUpdatedBackup() {
+		setLatestBackupDate();
 		updateData();
 		backupServer();
 		uploadBackup();
@@ -117,7 +118,7 @@ public class ScheduledTasks {
 	private void restoreBackup() {
 		try {
 			if (!restoredBackup) {
-				restoreService.restore();
+				restoreService.restoreFromDownloadedBackup();
 				restoredBackup = true;
 			}
 		} catch (FailedReplicationException e) {
@@ -129,6 +130,12 @@ public class ScheduledTasks {
 	private void restoreFromMailedBackup() {
 		downloadBackup();
 		restoreBackup();
+	}
+
+	private void setLatestBackupDate() {
+		// TODO Auto-generated method stub
+		Sync s = repository.findFirstByTypeOrderByLastSyncDesc(SyncType.BACKUP);
+		date = (s == null ? epochDate() : s.getLastSync());
 	}
 
 	private void updateData() {
@@ -149,7 +156,7 @@ public class ScheduledTasks {
 	private void uploadBackup() {
 		try {
 			if (!uploadedBackup) {
-				uploadService.uploadBackup();
+				uploadService.upload("backup");
 				uploadedBackup = true;
 			}
 		} catch (Exception e) {

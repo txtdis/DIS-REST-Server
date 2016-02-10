@@ -9,7 +9,7 @@ public class FailedReplicationException extends Exception {
 
 	private static final long serialVersionUID = -3873340228411218001L;
 
-	public FailedReplicationException() {
-		super("Replication failed;\nCheck server, internet connection,\nthen reboot server.");
+	public FailedReplicationException(String activity) {
+		super(activity + " failed");
 	}
 }

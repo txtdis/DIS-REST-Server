@@ -1,9 +1,8 @@
-package ph.txtdis.converter;
+package ph.txtdis.service;
 
 import static java.time.ZonedDateTime.now;
 import static java.util.stream.Collectors.toList;
 import static ph.txtdis.util.NumberUtils.isZero;
-import static ph.txtdis.util.SpringUtils.username;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,8 +24,8 @@ import ph.txtdis.repository.CustomerDiscountRepository;
 import ph.txtdis.repository.CustomerRepository;
 import ph.txtdis.repository.ItemRepository;
 
-@Service("billableToBillingConverter")
-public class BillableToBillingConverter {
+@Service("billableToBillingService")
+public class BillableToBillingService {
 
 	@Autowired
 	private CustomerRepository customer;
@@ -91,6 +90,7 @@ public class BillableToBillingConverter {
 			b.setRma(a.getIsRma());
 			b.setBadOrderAllowanceValue(a.getBadOrderAllowanceValue());
 			updateTotals(b, a);
+			updateDecisionData(b, a);
 		}
 		return b;
 	}
@@ -220,12 +220,12 @@ public class BillableToBillingConverter {
 
 	private void updateDecisionData(Billing b, Billable a) {
 		Boolean v = a.getIsValid();
-		if (v != null) {
-			b.setIsValid(v);
-			b.setRemarks(a.getRemarks());
-			b.setAuditedBy(username());
-			b.setAuditedOn(now());
-		}
+		if (v == null)
+			return;
+		b.setIsValid(v);
+		b.setRemarks(a.getRemarks());
+		b.setDecidedBy(a.getDecidedBy());
+		b.setDecidedOn(a.getDecidedOn());
 	}
 
 	private void updatePickData(Billing b, Billable a) {

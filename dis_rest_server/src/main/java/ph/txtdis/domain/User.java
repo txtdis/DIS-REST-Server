@@ -15,12 +15,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @Table(name = "users")
-@NoArgsConstructor
 public class User implements Serializable, Keyed<String> {
 
 	private static final long serialVersionUID = -2632553934643767369L;

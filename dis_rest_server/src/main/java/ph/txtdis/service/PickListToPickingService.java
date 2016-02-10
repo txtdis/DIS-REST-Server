@@ -1,4 +1,4 @@
-package ph.txtdis.converter;
+package ph.txtdis.service;
 
 import static java.util.stream.Collectors.toList;
 
@@ -17,8 +17,8 @@ import ph.txtdis.repository.PickListRepository;
 import ph.txtdis.repository.TruckRepository;
 import ph.txtdis.repository.UserRepository;
 
-@Service("pickListToPickingConverter")
-public class PickListToPickingConverter {
+@Service("pickListToPickingService")
+public class PickListToPickingService {
 
 	@Autowired
 	private BillingRepository billingRepo;

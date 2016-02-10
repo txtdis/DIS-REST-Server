@@ -37,9 +37,8 @@ import static java.math.BigDecimal.ZERO;
 
 import static ph.txtdis.util.DateTimeUtils.endOfDay;
 import static ph.txtdis.util.DateTimeUtils.startOfDay;
+import static ph.txtdis.util.DateTimeUtils.toDate;
 
-import ph.txtdis.converter.BillableToBillingConverter;
-import ph.txtdis.converter.BillingToBillableConverter;
 import ph.txtdis.domain.Billing;
 import ph.txtdis.domain.Customer;
 import ph.txtdis.domain.Item;
@@ -48,6 +47,8 @@ import ph.txtdis.exception.FailedPrintingException;
 import ph.txtdis.printer.ReturnedMaterialPrinter;
 import ph.txtdis.repository.BillingRepository;
 import ph.txtdis.repository.CustomerRepository;
+import ph.txtdis.service.BillableToBillingService;
+import ph.txtdis.service.BillingToBillableService;
 
 @RequestMapping("/billables")
 @RestController("billableController")
@@ -56,10 +57,10 @@ public class BillableController {
 	private static Logger logger = getLogger(BillableController.class);
 
 	@Autowired
-	private BillingToBillableConverter fromBilling;
+	private BillingToBillableService fromBilling;
 
 	@Autowired
-	private BillableToBillingConverter fromBillable;
+	private BillableToBillingService fromBillable;
 
 	@Autowired
 	private BillingRepository repository;
@@ -136,7 +137,7 @@ public class BillableController {
 	public ResponseEntity<?> findByCustomerPurchaseItem(@RequestParam("by") Customer c, @RequestParam("item") Item i) {
 		LocalDate start = now().minusDays(180L);
 		Billable a = new Billable();
-		if (!start.isBefore(startDate())) {
+		if (!start.isBefore(goLive())) {
 			Billing b = repository.findFirstByNumIdNotNullAndRmaNullAndCustomerAndOrderDateBetweenAndDetailsItem(c,
 					start, now(), i);
 			a = idOnlyBillable(b);
@@ -182,7 +183,7 @@ public class BillableController {
 	public ResponseEntity<?> findNotFullyPaidCOD(@RequestParam("seller") String s, @RequestParam("upTo") Date d) {
 		List<Billing> l = repository
 				.findByNumIdNotNullAndRmaNullAndCustomerNotAndFullyPaidFalseAndOrderDateBetweenOrderByOrderDateAsc(
-						vendor(), startDate(), billingCutoff(d, s));
+						vendor(), goLive(), billingCutoff(d, s));
 		Optional<Billing> o = l.stream().filter(codCustomerOf(s)).findFirst();
 		Billable b = o.isPresent() ? orderNoOnlyBillable(o.get()) : null;
 		return new ResponseEntity<>(b, OK);
@@ -252,7 +253,7 @@ public class BillableController {
 			@RequestParam("upTo") Date d) {
 		List<Billing> b = repository
 				.findByNumIdNullAndRmaNullAndCustomerNotAndBookingIdNotNullAndPickingNotNullAndOrderDateBetweenOrderByOrderDateAsc(
-						vendor(), startDate(), billingCutoff(d, seller));
+						vendor(), goLive(), billingCutoff(d, seller));
 		Billable billable = b == null ? null : bookingIdOnlyBillable(b.get(0));
 		if (!seller.equals("all"))
 			billable = filterBySeller(b, seller);
@@ -263,7 +264,7 @@ public class BillableController {
 	public ResponseEntity<?> findUnpickedOn(@RequestParam("date") Date d, @RequestParam("truck") String t) {
 		List<Billing> b = repository.findByOrderDateAndCustomerNotAndRmaNullAndPickingNull(d.toLocalDate(), vendor());
 		List<Billable> a = fromBilling.toBillable(b);
-		a = a.stream().filter(route(t)).collect(toList());
+		a = a.stream().filter(byDeliveryTypeAndValidity(t)).collect(toList());
 		return new ResponseEntity<>(a, OK);
 	}
 
@@ -351,6 +352,13 @@ public class BillableController {
 		return i;
 	}
 
+	private Predicate<Billable> byDeliveryTypeAndValidity(String truck) {
+		return b -> (b.getIsValid() == null || b.getIsValid()) //
+				&& (truck.equals("PICK-UP") ? //
+						internalSales(b) || warehouseSales(b) //
+						: !internalSales(b) && !warehouseSales(b));
+	}
+
 	private Predicate<Billing> codCustomerOf(String seller) {
 		return a -> a.getOrderDate().equals(a.getDueDate()) && a.getCustomer().getSeller().equals(seller);
 	}
@@ -366,6 +374,10 @@ public class BillableController {
 
 	private LocalDate getInvoiceDate(List<Billing> l, int i) {
 		return l.get(i).getOrderDate();
+	}
+
+	private LocalDate goLive() {
+		return toDate(goLive);
 	}
 
 	private boolean greaterThan30DayGapBetweenInvoices(List<Billing> l, int i) {
@@ -392,7 +404,7 @@ public class BillableController {
 	}
 
 	private boolean internalSales(Billable b) {
-		return b.getRoute().equals("INTERNAL");
+		return b.getRoute().equals("OTHERS");
 	}
 
 	private Billing lastSpun() {
@@ -428,20 +440,10 @@ public class BillableController {
 		}
 	}
 
-	private Predicate<Billable> route(String truck) {
-		if (truck.equals("PICK-UP"))
-			return b -> internalSales(b) || warehouseSales(b);
-		return b -> !(internalSales(b) && warehouseSales(b));
-	}
-
 	private Billable spunIdOnlyBillable(Billing b) {
 		Billable i = new Billable();
 		i.setId(b.getId());
 		return i;
-	}
-
-	private LocalDate startDate() {
-		return LocalDate.parse(goLive);
 	}
 
 	private Billable toTotalValueOnlyBillable(BigDecimal v) {

@@ -17,17 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 import static ph.txtdis.util.DateTimeUtils.endOfDay;
 import static ph.txtdis.util.DateTimeUtils.startOfDay;
 
-import ph.txtdis.converter.BillingToBillableConverter;
 import ph.txtdis.domain.Billing;
 import ph.txtdis.dto.Billable;
 import ph.txtdis.repository.BillingRepository;
+import ph.txtdis.service.BillingToBillableService;
 
 @RestController("deliveryReportController")
 @RequestMapping("/deliveryReports")
 public class DeliveryReportController extends IdController<BillingRepository, Billing, Long> {
 
 	@Autowired
-	private BillingToBillableConverter fromBilling;
+	private BillingToBillableService fromBilling;
 
 	@RequestMapping(path = "/date", method = GET)
 	public ResponseEntity<?> findByDate(@RequestParam("on") Date d) {

@@ -10,7 +10,7 @@ import ph.txtdis.domain.CustomerDiscount;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public abstract class AbstractSoldOrder<PK> extends AbstractAuditedId<PK> {
+public abstract class AbstractSoldOrder<PK> extends EntityDecisionNeeded<PK> {
 
 	private BigDecimal value;
 

@@ -1,4 +1,4 @@
-package ph.txtdis.converter;
+package ph.txtdis.service;
 
 import static java.util.stream.Collectors.toList;
 
@@ -19,8 +19,8 @@ import ph.txtdis.repository.StockTakeRepository;
 import ph.txtdis.repository.UserRepository;
 import ph.txtdis.repository.WarehouseRepository;
 
-@Service("stockTakeToStockTakingConverter")
-public class StockTakeToStockTakingConverter {
+@Service("stockTakeToStockTakingService")
+public class StockTakeToStockTakingService {
 
 	@Autowired
 	private ItemRepository itemRepo;

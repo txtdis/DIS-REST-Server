@@ -1,9 +1,9 @@
 package ph.txtdis.service;
 
+import static java.io.File.separator;
 import static java.lang.System.getProperty;
 import static javax.mail.Session.getInstance;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Properties;
@@ -11,7 +11,6 @@ import java.util.Properties;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -22,11 +21,11 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import ph.txtdis.exception.FailedUploadException;
+import ph.txtdis.exception.FailedReplicationException;
 
-@Component("backupUploader")
+@Service("uploadService")
 public class UploadService {
 
 	@Value("${database.name}")
@@ -35,36 +34,27 @@ public class UploadService {
 	@Value("${mail.sender}")
 	private String sender;
 
-	@Value("${mail.password}")
+	@Value("${mail.sender.password}")
 	private String password;
 
-	@Value("${mail.recipients}")
-	private String[] recipients;
+	@Value("${mail.recipient}")
+	private String recipient;
 
-	private String backup;
-
-	private Date date;
-
-	public Date uploadApproval() throws FailedUploadException {
-		return uploadFile("csv");
+	public void upload(String type) throws FailedReplicationException {
+		try {
+			String path = getProperty("user.home") + separator;
+			String filename = databaseName + "." + type;
+			Transport.send(message(path, filename));
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new FailedReplicationException("Upload");
+		}
 	}
 
-	public Date uploadBackup() throws FailedUploadException {
-		return uploadFile("backup");
-	}
-
-	private InternetAddress[] addresses() throws AddressException {
-		int size = recipients.length;
-		InternetAddress[] a = new InternetAddress[size];
-		for (int i = 0; i < size; i++)
-			a[i] = new InternetAddress(recipients[i]);
-		return a;
-	}
-
-	private MimeBodyPart attachment() throws IOException, MessagingException {
+	private MimeMultipart attachment(String filename) throws IOException, MessagingException {
 		MimeBodyPart m = new MimeBodyPart();
-		m.attachFile(backup);
-		return m;
+		m.attachFile(filename);
+		return new MimeMultipart(m);
 	}
 
 	private Authenticator authenticator() {
@@ -76,18 +66,14 @@ public class UploadService {
 		};
 	}
 
-	private MimeMessage message() throws AddressException, MessagingException, IOException {
+	private MimeMessage message(String path, String filename) throws AddressException, MessagingException, IOException {
 		MimeMessage m = new MimeMessage(session());
 		m.setFrom(new InternetAddress(sender));
-		m.setRecipients(Message.RecipientType.TO, addresses());
-		m.setSentDate(date);
-		m.setSubject(serverName());
-		m.setContent(multipart());
+		m.setRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
+		m.setSentDate(new Date());
+		m.setSubject(filename);
+		m.setContent(attachment(path + filename));
 		return m;
-	}
-
-	private Multipart multipart() throws MessagingException, IOException {
-		return new MimeMultipart(attachment());
 	}
 
 	private Properties properties() {
@@ -99,26 +85,7 @@ public class UploadService {
 		return p;
 	}
 
-	private String serverName() {
-		return databaseName + ".backup";
-	}
-
 	private Session session() {
 		return getInstance(properties(), authenticator());
-	}
-
-	private void upload() throws FailedUploadException {
-		try {
-			Transport.send(message());
-		} catch (Exception e) {
-			throw new FailedUploadException();
-		}
-	}
-
-	private Date uploadFile(String ext) throws FailedUploadException {
-		backup = getProperty("user.home") + File.separator + databaseName + "." + ext;
-		date = new Date();
-		upload();
-		return date;
 	}
 }

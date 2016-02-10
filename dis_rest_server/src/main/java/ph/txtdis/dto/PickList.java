@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class PickList extends AbstractTrackedId<Long> {
+public class PickList extends EntityCreationTracked<Long> {
 
 	private String truck, driver, leadHelper, asstHelper, remarks, printedBy;
 

@@ -7,11 +7,11 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public abstract class AbstractAuditedId<PK> extends AbstractTrackedId<PK> {
+public abstract class EntityDecisionNeeded<PK> extends EntityCreationTracked<PK> {
 
 	private Boolean isValid;
 
-	private String auditedBy;
+	private String decidedBy;
 
-	private ZonedDateTime auditedOn;
+	private ZonedDateTime decidedOn;
 }

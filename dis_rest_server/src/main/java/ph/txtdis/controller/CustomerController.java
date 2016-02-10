@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import static ph.txtdis.type.LocationType.BARANGAY;
+import static ph.txtdis.type.LocationType.CITY;
+import static ph.txtdis.type.LocationType.PROVINCE;
+
 import ph.txtdis.domain.Customer;
 import ph.txtdis.domain.WeeklyVisit;
 import ph.txtdis.repository.CustomerRepository;
@@ -67,7 +71,7 @@ public class CustomerController extends SpunController<CustomerRepository, Custo
 
 	@RequestMapping(path = "/noStreetAddress", method = GET)
 	public ResponseEntity<?> findNoStreetAddress() {
-		List<Customer> l = repository.findByDeactivatedOnNullAndTypeAndContactNameNotNullAndStreetNull(CUSTOMER);
+		List<Customer> l = repository.findByDeactivatedOnNullAndTypeAndStreetNull(CUSTOMER);
 		Customer c = filterBySeller(l, username());
 		return new ResponseEntity<>(c, OK);
 	}
@@ -86,21 +90,21 @@ public class CustomerController extends SpunController<CustomerRepository, Custo
 
 	@RequestMapping(path = "/notCorrectBarangayAddress", method = GET)
 	public ResponseEntity<?> findNotCorrectBarangayAddress() {
-		List<Customer> l = repository.findByDeactivatedOnNullAndTypeAndBarangayNull(CUSTOMER);
+		List<Customer> l = repository.findByDeactivatedOnNullAndTypeAndBarangayTypeNot(CUSTOMER, BARANGAY);
 		Customer c = filterBySeller(l, username());
 		return new ResponseEntity<>(c, OK);
 	}
 
 	@RequestMapping(path = "/notCorrectCityAddress", method = GET)
 	public ResponseEntity<?> findNotCorrectCityAddress() {
-		List<Customer> l = repository.findByDeactivatedOnNullAndTypeAndCityNull(CUSTOMER);
+		List<Customer> l = repository.findByDeactivatedOnNullAndTypeAndCityTypeNot(CUSTOMER, CITY);
 		Customer c = filterBySeller(l, username());
 		return new ResponseEntity<>(c, OK);
 	}
 
 	@RequestMapping(path = "/notCorrectProvincialAddress", method = GET)
 	public ResponseEntity<?> findNotCorrectProvincialAddress() {
-		List<Customer> l = repository.findByDeactivatedOnNullAndTypeAndProvinceNull(CUSTOMER);
+		List<Customer> l = repository.findByDeactivatedOnNullAndTypeAndProvinceTypeNot(CUSTOMER, PROVINCE);
 		Customer c = filterBySeller(l, username());
 		return new ResponseEntity<>(c, OK);
 	}

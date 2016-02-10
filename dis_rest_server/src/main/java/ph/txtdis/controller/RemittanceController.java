@@ -1,19 +1,16 @@
 package ph.txtdis.controller;
 
-import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath;
-import static ph.txtdis.type.PaymentType.CASH;
 
 import java.net.URI;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,15 +25,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static ph.txtdis.util.DateTimeUtils.endOfDay;
 import static ph.txtdis.util.DateTimeUtils.startOfDay;
+import static ph.txtdis.util.DateTimeUtils.toDate;
 
-import ph.txtdis.converter.PaymentToRemittanceConverter;
-import ph.txtdis.converter.RemittanceToPaymentConverter;
 import ph.txtdis.domain.Billing;
 import ph.txtdis.domain.Customer;
 import ph.txtdis.domain.Remittance;
 import ph.txtdis.dto.Payment;
-import ph.txtdis.repository.CustomerRepository;
 import ph.txtdis.repository.RemittanceRepository;
+import ph.txtdis.service.PaymentToRemittanceService;
+import ph.txtdis.service.RemittanceService;
+import ph.txtdis.service.RemittanceToPaymentService;
 import ph.txtdis.type.PaymentType;
 
 @RestController("remittanceController")
@@ -44,30 +42,19 @@ import ph.txtdis.type.PaymentType;
 public class RemittanceController {
 
 	@Autowired
-	private CustomerRepository customerRepository;
+	private RemittanceService service;
 
 	@Autowired
-	private RemittanceToPaymentConverter fromRemittance;
+	private RemittanceToPaymentService fromRemittance;
 
 	@Autowired
-	private PaymentToRemittanceConverter fromPayment;
+	private PaymentToRemittanceService fromPayment;
 
 	@Autowired
 	private RemittanceRepository repository;
 
 	@Value("${go.live}")
 	private String goLive;
-
-	@Value("${grace.period.cash.deposit}")
-	private String gracePeriodCashDeposit;
-
-	@Value("${grace.period.check.deposit}")
-	private String gracePeriodCheckDeposit;
-
-	@Value("${vendor.id}")
-	private String vendorId;
-
-	private Customer vendor;
 
 	@RequestMapping(path = "/{id}", method = GET)
 	public ResponseEntity<?> find(@PathVariable Long id) {
@@ -78,14 +65,15 @@ public class RemittanceController {
 
 	@RequestMapping(path = "/find", method = GET)
 	public ResponseEntity<?> findByBilling(@RequestParam("billing") Billing b) {
-		List<Remittance> r = repository.findByDetailsBilling(b);
+		List<Remittance> r = service.findByBilling(b);
 		List<Payment> p = fromRemittance.toPayment(r);
 		return new ResponseEntity<>(p, OK);
 	}
 
 	@RequestMapping(path = "/check", method = GET)
 	public ResponseEntity<?> findByCheck(@RequestParam("bank") Customer b, @RequestParam("id") Long id) {
-		Remittance r = repository.findByDraweeBankAndCheckIdAndIsValidIn(b, id, asList(null, false));
+		List<Remittance> l = repository.findByDraweeBankAndCheckId(b, id);
+		Remittance r = filterValidity(l);
 		Payment p = fromRemittance.toPayment(r);
 		return new ResponseEntity<>(p, OK);
 	}
@@ -93,15 +81,13 @@ public class RemittanceController {
 	@RequestMapping(path = "/collector", method = GET)
 	public ResponseEntity<?> findByCollector(@RequestParam("name") String n, @RequestParam("date") Date d) {
 		Remittance r = repository.findFirstByCollectorAndPaymentDateAndCheckIdNull(n, d.toLocalDate());
-		Payment p = idOnlyPayment(r);
+		Payment p = fromRemittance.toIdOnlyPayment(r);
 		return new ResponseEntity<>(p, OK);
 	}
 
 	@RequestMapping(path = "/date", method = GET)
 	public ResponseEntity<?> findByDate(@RequestParam("on") Date d) {
-		ZonedDateTime start = startOfDay(d.toLocalDate());
-		ZonedDateTime end = endOfDay(d.toLocalDate());
-		Remittance r = repository.findFirstByCreatedOnBetweenOrderByIdAsc(start, end);
+		Remittance r = repository.findFirstByCreatedOnBetweenOrderByIdAsc(startOfDay(d), endOfDay(d));
 		Payment p = fromRemittance.toPayment(r);
 		return new ResponseEntity<>(p, OK);
 	}
@@ -109,7 +95,7 @@ public class RemittanceController {
 	@RequestMapping(path = "/undeposited", method = GET)
 	public ResponseEntity<?> findByUndepositedPayments(@RequestParam("payType") PaymentType t,
 			@RequestParam("seller") String s, @RequestParam("upTo") Date d) {
-		Remittance r = findOneUndepositedPayment(t, s, d.toLocalDate());
+		Remittance r = service.findOneUndepositedPayment(t, s, d.toLocalDate());
 		Payment p = fromRemittance.toPayment(r);
 		return new ResponseEntity<>(p, OK);
 	}
@@ -124,7 +110,7 @@ public class RemittanceController {
 	@RequestMapping(path = "/firstToSpin", method = GET)
 	public ResponseEntity<?> firstToSpin() {
 		Remittance r = repository.findFirstByOrderByIdAsc();
-		Payment p = idOnlyPayment(r);
+		Payment p = fromRemittance.toIdOnlyPayment(r);
 		return new ResponseEntity<>(p, OK);
 	}
 
@@ -138,16 +124,16 @@ public class RemittanceController {
 	@RequestMapping(path = "/lastToSpin", method = GET)
 	public ResponseEntity<?> lastToSpin() {
 		Remittance r = repository.findFirstByOrderByIdDesc();
-		Payment p = idOnlyPayment(r);
+		Payment p = fromRemittance.toIdOnlyPayment(r);
 		return new ResponseEntity<>(p, OK);
 	}
 
 	@RequestMapping(method = GET)
 	public ResponseEntity<?> list() {
-		// TODO return minus days back to 15
-		ZonedDateTime twoWeeksAgo = endOfDay(LocalDate.now().minusDays(60L));
-		List<Remittance> lr = repository.findByCreatedOnGreaterThanOrderByIdDesc(twoWeeksAgo);
-		List<Payment> p = lr.stream().map(r -> fromRemittance.toForHistoryPayment(r)).collect(Collectors.toList());
+		LocalDate goLive = toDate(this.goLive);
+		List<Remittance> l = repository
+				.findByPaymentDateGreaterThanAndDepositedOnNullOrDecidedOnNullOrderByIdDesc(goLive);
+		List<Payment> p = l.stream().map(r -> fromRemittance.toForHistoryPayment(r)).collect(toList());
 		return new ResponseEntity<>(p, OK);
 	}
 
@@ -181,29 +167,12 @@ public class RemittanceController {
 		return new ResponseEntity<>(p, httpHeaders(p), CREATED);
 	}
 
-	private Long cashBufferDays() {
-		return Long.valueOf(gracePeriodCashDeposit);
-	}
-
-	private Long checkBufferDays() {
-		return Long.valueOf(gracePeriodCheckDeposit);
-	}
-
-	private LocalDate endDate(PaymentType p, LocalDate d) {
-		LocalDate end = d.minusDays(p == CASH ? cashBufferDays() : checkBufferDays());
-		return end;
-	}
-
-	private Remittance findOneUndepositedPayment(PaymentType p, String seller, LocalDate d) {
-		LocalDate start = LocalDate.parse(goLive);
-		LocalDate end = endDate(p, d);
-		List<Remittance> l = undepositedPayments(p, start, end);
-		if (l == null)
+	private Remittance filterValidity(List<Remittance> l) {
+		try {
+			return l.stream().filter(p -> p.getIsValid() == null || p.getIsValid()).findFirst().get();
+		} catch (Exception e) {
 			return null;
-		// TODO
-		// l.stream().map(Remittance::getDetails).f.filter(i ->
-		// s.equals(i.getCustomer().getSeller())).findFirst();
-		return null;
+		}
 	}
 
 	private MultiValueMap<String, String> httpHeaders(Payment p) {
@@ -211,30 +180,5 @@ public class RemittanceController {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setLocation(uri);
 		return httpHeaders;
-	}
-
-	private Payment idOnlyPayment(Remittance r) {
-		if (r == null)
-			return null;
-		Payment p = new Payment();
-		p.setId(r.getId());
-		return p;
-	}
-
-	private List<Remittance> undepositedPayments(PaymentType p, LocalDate start, LocalDate end) {
-		List<Remittance> l = repository
-				.findByDetailsBillingCustomerNotAndReceivedOnNullAndCheckIdNotNullAndPaymentDateBetweenOrderByPaymentDateAsc(
-						vendor(), start, end);
-		if (p == CASH)
-			l = repository
-					.findByDetailsBillingCustomerNotAndDepositedOnNullAndCheckIdNullAndPaymentDateBetweenOrderByPaymentDateAsc(
-							vendor(), start, end);
-		return l;
-	}
-
-	private Customer vendor() {
-		if (vendor == null)
-			vendor = customerRepository.findOne(Long.valueOf(vendorId));
-		return vendor;
 	}
 }

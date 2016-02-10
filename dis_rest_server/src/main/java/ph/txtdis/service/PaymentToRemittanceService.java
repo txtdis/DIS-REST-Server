@@ -1,4 +1,4 @@
-package ph.txtdis.converter;
+package ph.txtdis.service;
 
 import static java.util.stream.Collectors.toList;
 import static ph.txtdis.util.NumberUtils.isNegative;
@@ -24,8 +24,8 @@ import ph.txtdis.repository.BillingRepository;
 import ph.txtdis.repository.CustomerRepository;
 import ph.txtdis.repository.RemittanceRepository;
 
-@Service("paymentToRemittanceConverter")
-public class PaymentToRemittanceConverter {
+@Service("paymentToRemittanceService")
+public class PaymentToRemittanceService {
 
 	@Autowired
 	private BillingRepository billing;
@@ -42,6 +42,10 @@ public class PaymentToRemittanceConverter {
 
 	public Remittance toRemittance(Payment p) {
 		return p == null ? null : convert(p);
+	}
+
+	public List<RemittanceDetail> unpayBillings(Remittance r) {
+		return r.getDetails().stream().map(d -> unpayBilling(d)).collect(toList());
 	}
 
 	private BigDecimal balance(PaymentDetail pd, Billing b) {
@@ -101,7 +105,7 @@ public class PaymentToRemittanceConverter {
 	}
 
 	private BigDecimal payment(PaymentDetail d) {
-		BigDecimal p = payment(d);
+		BigDecimal p = d.getPaymentValue();
 		return p == null || isNegative(p) ? ZERO : p;
 	}
 
@@ -128,10 +132,6 @@ public class PaymentToRemittanceConverter {
 		return d;
 	}
 
-	private List<RemittanceDetail> unpayBillings(Remittance r) {
-		return r.getDetails().stream().map(d -> unpayBilling(d)).collect(toList());
-	}
-
 	private Remittance update(Payment p) {
 		Remittance r = remit.findOne(p.getId());
 		if (p.getIsValid() != null)
@@ -148,8 +148,8 @@ public class PaymentToRemittanceConverter {
 		if (!isValid)
 			r.setDetails(unpayBillings(r));
 		r.setIsValid(isValid);
-		r.setAuditedBy(p.getAuditedBy());
-		r.setAuditedOn(p.getAuditedOn());
+		r.setDecidedBy(p.getDecidedBy());
+		r.setDecidedOn(p.getDecidedOn());
 		r.setRemarks(p.getRemarks());
 		return r;
 	}

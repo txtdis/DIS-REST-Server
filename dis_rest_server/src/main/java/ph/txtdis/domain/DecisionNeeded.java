@@ -15,8 +15,8 @@ public abstract class DecisionNeeded extends CreationTracked<Long> {
 
 	private static final long serialVersionUID = -805511847282135281L;
 
-	@Column(name = "is_approved")
-	private Boolean approved;
+	@Column(name = "is_valid")
+	private Boolean isValid;
 
 	private String remarks;
 

@@ -7,6 +7,7 @@ import static java.time.ZonedDateTime.parse;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Date.from;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -16,12 +17,28 @@ import java.util.Date;
 
 public class DateTimeUtils {
 
+	public static Date dateNow() {
+		return from(ZonedDateTime.now().toInstant());
+	}
+
+	public static ZonedDateTime endOfDay(java.sql.Date d) {
+		return endOfDay(d.toLocalDate());
+	}
+
 	public static ZonedDateTime endOfDay(LocalDate d) {
 		return d == null ? null : d.plusDays(1L).atStartOfDay(zoneHere());
 	}
 
 	public static LocalDate endOfMonth(LocalDate d) {
 		return startOfMonth(d).plusMonths(1L).minusDays(1L);
+	}
+
+	public static Date epochDate() {
+		return toUtilDate(LocalDate.of(1970, 01, 01));
+	}
+
+	public static ZonedDateTime startOfDay(java.sql.Date d) {
+		return startOfDay(d.toLocalDate());
 	}
 
 	public static ZonedDateTime startOfDay(LocalDate d) {
@@ -33,7 +50,7 @@ public class DateTimeUtils {
 	}
 
 	public static LocalDate toDate(String date) {
-		return date == null ? null : LocalDate.parse(date, dateFormat());
+		return date == null ? null : parseDate(date);
 	}
 
 	public static String toDateDisplay(LocalDate d) {
@@ -68,6 +85,11 @@ public class DateTimeUtils {
 		return zdt == null ? "" : zdt.withZoneSameInstant(zoneHere()).format(ofPattern("yyyy-MM-dd@hh.mma"));
 	}
 
+	public static String toTimestampText(Date d) {
+		SimpleDateFormat df = new SimpleDateFormat("M/d/yyyy h:mma");
+		return d == null ? "" : df.format(d);
+	}
+
 	public static String toTimestampText(ZonedDateTime zdt) {
 		return zdt == null ? "" : zdt.withZoneSameInstant(zoneHere()).format(timestampFormat());
 	}
@@ -82,6 +104,14 @@ public class DateTimeUtils {
 
 	private static DateTimeFormatter dateFormat() {
 		return ofPattern("M/d/yyyy");
+	}
+
+	private static LocalDate parseDate(String date) {
+		try {
+			return LocalDate.parse(date, dateFormat());
+		} catch (Exception e) {
+			return LocalDate.parse(date);
+		}
 	}
 
 	private static DateTimeFormatter timestampFormat() {

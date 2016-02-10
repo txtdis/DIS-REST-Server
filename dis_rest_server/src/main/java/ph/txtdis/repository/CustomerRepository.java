@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import ph.txtdis.domain.Customer;
+import ph.txtdis.type.LocationType;
 import ph.txtdis.type.PartnerType;
 
 @Repository("customerRepository")
@@ -14,7 +15,8 @@ public interface CustomerRepository extends NameListRepository<Customer>, SpunRe
 	List<Customer> findByDeactivatedOnNullAndContactNameNotNullAndContactSurnameNotNull(
 			@Param("customer") PartnerType t);
 
-	List<Customer> findByDeactivatedOnNullAndTypeAndBarangayNull(@Param("customer") PartnerType t);
+	List<Customer> findByDeactivatedOnNullAndTypeAndBarangayTypeNot(@Param("customer") PartnerType t,
+			@Param("barangay") LocationType b);
 
 	List<Customer> findByDeactivatedOnNullAndTypeAndChannelVisitedTrueAndVisitFrequencyNotNullAndVisitScheduleNotNull(
 			@Param("customer") PartnerType t);
@@ -25,7 +27,8 @@ public interface CustomerRepository extends NameListRepository<Customer>, SpunRe
 	List<Customer> findByDeactivatedOnNullAndTypeAndChannelVisitedTrueAndVisitScheduleNull(
 			@Param("customer") PartnerType t);
 
-	List<Customer> findByDeactivatedOnNullAndTypeAndCityNull(@Param("customer") PartnerType t);
+	List<Customer> findByDeactivatedOnNullAndTypeAndCityTypeNot(@Param("customer") PartnerType t,
+			@Param("city") LocationType c);
 
 	List<Customer> findByDeactivatedOnNullAndTypeAndContactNameNotNullAndContactSurnameNull(
 			@Param("customer") PartnerType t);
@@ -35,15 +38,16 @@ public interface CustomerRepository extends NameListRepository<Customer>, SpunRe
 
 	List<Customer> findByDeactivatedOnNullAndTypeAndContactNameNotNullAndMobileNull(@Param("customer") PartnerType t);
 
-	List<Customer> findByDeactivatedOnNullAndTypeAndContactNameNotNullAndStreetNull(@Param("customer") PartnerType t);
-
 	List<Customer> findByDeactivatedOnNullAndTypeAndContactNameNullAndCreditDetailsNotNull(
 			@Param("customer") PartnerType t);
 
 	List<Customer> findByDeactivatedOnNullAndTypeAndContactNameNullAndCustomerDiscountsNotNull(
 			@Param("customer") PartnerType t);
 
-	List<Customer> findByDeactivatedOnNullAndTypeAndProvinceNull(@Param("customer") PartnerType t);
+	List<Customer> findByDeactivatedOnNullAndTypeAndProvinceTypeNot(@Param("customer") PartnerType t,
+			@Param("province") LocationType p);
+
+	List<Customer> findByDeactivatedOnNullAndTypeAndStreetNull(@Param("customer") PartnerType t);
 
 	List<Customer> findByDeactivatedOnNullAndTypeOrderByNameAsc(@Param("bank") PartnerType t);
 

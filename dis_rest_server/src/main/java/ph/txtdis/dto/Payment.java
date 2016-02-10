@@ -11,7 +11,7 @@ import ph.txtdis.domain.Customer;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class Payment extends AbstractAuditedId<Long> {
+public class Payment extends EntityDecisionNeeded<Long> {
 
 	private BigDecimal value;
 

@@ -6,10 +6,11 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import lombok.Data;
-import ph.txtdis.domain.Keyed;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class Billable implements Keyed<Long> {
+@EqualsAndHashCode(callSuper = true)
+public class Billable extends EntityDecisionNeeded<Long> {
 
 	private boolean isPicked;
 
@@ -27,8 +28,8 @@ public class Billable implements Keyed<Long> {
 
 	private Long id, numId, bookingId, customerId, receivingId;
 
-	private String prefix, suffix, customerName, customerAddress, customerLocation, remarks, route, auditedBy, billedBy,
-			createdBy, printedBy, receivedBy, receivingModifiedBy, truck;
+	private String prefix, suffix, customerName, customerAddress, customerLocation, remarks, route, billedBy, printedBy,
+			receivedBy, receivingModifiedBy, truck;
 
-	private ZonedDateTime auditedOn, billedOn, createdOn, printedOn, receivedOn, receivingModifiedOn;
+	private ZonedDateTime billedOn, printedOn, receivedOn, receivingModifiedOn;
 }

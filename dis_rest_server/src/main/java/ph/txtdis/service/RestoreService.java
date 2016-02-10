@@ -34,11 +34,11 @@ public class RestoreService {
 	@Value("${spring.datasource.password}")
 	private String password;
 
-	public void restore() throws FailedReplicationException {
+	public void restoreFromDownloadedBackup() throws FailedReplicationException {
 		try {
 			startRestoring();
 		} catch (Exception e) {
-			throw new FailedReplicationException();
+			throw new FailedReplicationException("Replication");
 		}
 	}
 
@@ -74,18 +74,14 @@ public class RestoreService {
 				"--username=" + username, //
 				"--no-password", //
 				"--clean", //
-				"--exit-on-error", //
-				"--single-transaction", //
 				"--verbose", //
 				"--dbname=" + databaseName, //
 				getProperty("user.home") + separator + databaseName + ".backup");
 	}
 
-	private void startRestoring() throws IOException, InterruptedException, FailedReplicationException {
+	private void startRestoring() throws IOException, InterruptedException {
 		Process p = build().start();
 		logRestoreProcess(p);
 		p.waitFor();
-		if (p.exitValue() != 0)
-			throw new FailedReplicationException();
 	}
 }

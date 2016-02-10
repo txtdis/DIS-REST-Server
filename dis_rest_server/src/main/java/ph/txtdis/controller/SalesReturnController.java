@@ -16,19 +16,19 @@ import org.springframework.web.bind.annotation.RestController;
 import static ph.txtdis.util.DateTimeUtils.endOfDay;
 import static ph.txtdis.util.DateTimeUtils.startOfDay;
 
-import ph.txtdis.converter.BillingToBillableConverter;
 import ph.txtdis.domain.Billing;
 import ph.txtdis.domain.Customer;
 import ph.txtdis.dto.Billable;
 import ph.txtdis.repository.BillingRepository;
 import ph.txtdis.repository.CustomerRepository;
+import ph.txtdis.service.BillingToBillableService;
 
 @RestController("salesReturnController")
 @RequestMapping("/salesReturns")
 public class SalesReturnController extends IdController<BillingRepository, Billing, Long> {
 
 	@Autowired
-	private BillingToBillableConverter fromBilling;
+	private BillingToBillableService fromBilling;
 
 	@Autowired
 	private CustomerRepository customer;

@@ -1,4 +1,4 @@
-package ph.txtdis.converter;
+package ph.txtdis.service;
 
 import static java.util.stream.Collectors.toList;
 
@@ -13,8 +13,8 @@ import ph.txtdis.domain.RemittanceDetail;
 import ph.txtdis.dto.Payment;
 import ph.txtdis.dto.PaymentDetail;
 
-@Service("remittanceToPaymentConverter")
-public class RemittanceToPaymentConverter {
+@Service("remittanceToPaymentService")
+public class RemittanceToPaymentService {
 
 	public Payment toForHistoryPayment(Remittance r) {
 		Payment p = new Payment();
@@ -23,6 +23,14 @@ public class RemittanceToPaymentConverter {
 		p.setPaymentDate(r.getPaymentDate());
 		p.setDepositedOn(r.getDepositedOn());
 		p.setIsValid(r.getIsValid());
+		return p;
+	}
+
+	public Payment toIdOnlyPayment(Remittance r) {
+		if (r == null)
+			return null;
+		Payment p = new Payment();
+		p.setId(r.getId());
 		return p;
 	}
 
@@ -93,8 +101,8 @@ public class RemittanceToPaymentConverter {
 
 	private void setAuditData(Remittance r, Payment p) {
 		p.setIsValid(r.getIsValid());
-		p.setAuditedBy(r.getAuditedBy());
-		p.setAuditedOn(r.getAuditedOn());
+		p.setDecidedBy(r.getDecidedBy());
+		p.setDecidedOn(r.getDecidedOn());
 	}
 
 	private void setCheckData(Remittance r, Payment p) {

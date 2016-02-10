@@ -46,7 +46,7 @@ import lombok.EqualsAndHashCode;
 		@Index(columnList = "id_no, created_on"), //
 		@Index(columnList = "receiving_id") }, //
 		uniqueConstraints = @UniqueConstraint(columnNames = { "prefix", "id_no", "suffix" }) )
-public class Billing extends Audited implements Detailed, Discounted {
+public class Billing extends DecisionNeeded implements Detailed, Discounted {
 
 	private static final long serialVersionUID = -4363805360652350591L;
 
@@ -126,8 +126,6 @@ public class Billing extends Audited implements Detailed, Discounted {
 
 	@Column(name = "bad_order_allowance", precision = 8, scale = 2)
 	private BigDecimal badOrderAllowanceValue;
-
-	private String remarks;
 
 	public String getOrderNo() {
 		if (numId == null)
